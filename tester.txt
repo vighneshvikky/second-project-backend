@@ -1,0 +1,20 @@
+src
+├── auth
+│   ├── dto
+│   │   └── signup.dto.ts
+│   ├── services
+│   │   ├── user-auth.service.ts
+│   │   └── trainer-auth.service.ts
+│   ├── strategies
+│   │   ├── user-signup.strategy.ts
+│   │   └── trainer-signup.strategy.ts
+│   ├── repositories
+│   │   └── user.repository.ts
+│   └── auth.module.ts
+├── user
+│   ├── schemas
+│   │   └── user.schema.ts
+│   ├── services
+│   │   └── user.service.ts
+│   └── user.module.ts
+└── main.ts
