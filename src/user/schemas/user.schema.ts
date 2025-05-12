@@ -14,6 +14,9 @@ export class User extends Document {
 
   @Prop({ required: true, enum: ['user', 'trainer'] })
   role: 'user' | 'trainer';
+
+  @Prop({default: false})
+  isBlocked: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

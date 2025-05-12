@@ -1,21 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateAccountDto } from 'src/auth/dto/createAccount.dto';
 import { Trainer } from './schemas/trainer.schema';
+import { BaseRepository } from '../common/repositories/base.repository';
+import { CreateAccountDto } from 'src/auth/dto/createAccount.dto';
 
 @Injectable()
-export class TrainerRepository {
-  constructor(@InjectModel('Trainer') private trainerModel: Model<Trainer>) {}
-  async create(data: CreateAccountDto): Promise<Trainer> {
-    const trainer = new this.trainerModel({
-      ...data,
-      role: 'trainer',
-    });
-    return trainer.save();
+export class TrainerRepository extends BaseRepository<Trainer> {
+  constructor(@InjectModel(Trainer.name) model: Model<Trainer>) {
+    super(model);
   }
 
-  async findByEmail(email: string) {
-    return this.trainerModel.findOne({ email, role: 'trainer' }).exec();
+  async findByEmail(email: string): Promise<Trainer | null> {
+    return this.model.findOne({ email }).exec();
+  }
+
+  async create(data: Partial<Trainer>): Promise<Trainer> {
+    return this.model.create(data);
   }
 }

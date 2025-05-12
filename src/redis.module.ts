@@ -10,17 +10,23 @@ import Redis from 'ioredis';
       provide: 'REDIS_CLIENT',
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        const host = configService.get<string>('REDIS_HOST');
+        const port = configService.get<number>('REDIS_PORT');
+        const password = configService.get<string>('REDIS_PASSWORD');
+        const tls = configService.get<string>('REDIS_TLS') === 'true';
+      
+        console.log('🔧 Redis config:', { host, port, password, tls });
+      
         const client = new Redis({
-          host: configService.get<string>('REDIS_HOST'),
-          port: configService.get<number>('REDIS_PORT'),
-          password: configService.get<string>('REDIS_PASSWORD'),
-          tls: configService.get<boolean>('REDIS_TLS') ? {} : undefined,
+          host,
+          port,
+          password,
+          tls: tls ? {} : undefined,
         });
-
-        // Optional: Log or test connection
+      
         client.on('connect', () => console.log('✅ Redis connected'));
         client.on('error', (err) => console.error('❌ Redis error:', err));
-
+      
         return client;
       },
     },
