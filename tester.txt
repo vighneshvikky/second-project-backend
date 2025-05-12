@@ -1,17 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from './schemas/user.schema';
-import { BaseRepository } from 'src/core/repositories/base.repository';
-
 @Injectable()
-export class UserRepository extends BaseRepository<User> {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {
-    super(userModel);
-  }
+export class AuthService {
+  constructor(
+    private userService: UserService,
+    private trainerService: TrainerService,
+    private jwtService: JwtService,
+    private refreshTokenStore: RefreshTokenStore,
+  ) {}
 
-  // You can add user-specific methods here
-  async findByEmail(email: string): Promise<User | null> {
-    return this.userModel.findOne({ email }).exec();
+  async verifyLogin(dto: LoginDto) {
+    let user: AuthUser | null;
+
+    if (dto.role === 'trainer') {
+      user = await this.trainerService.findByEmail(dto.email);
+    } else {
+      user = await this.userService.findByEmail(dto.email);
+    }
+
+    if (!user || !this.validatePassword(dto.password, user.password)) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const accessToken = this.jwtService.sign({ sub: user._id, role: user.role }, { expiresIn: '15m' });
+    const refreshToken = this.jwtService.sign({ sub: user._id, role: user.role }, { expiresIn: '7d' });
+
+    await this.refreshTokenStore.save(user._id, refreshToken);
+
+    return { accessToken, refreshToken };
   }
 }
