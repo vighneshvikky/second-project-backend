@@ -38,9 +38,11 @@ export class TrainerSignUpStrategy implements ISignUpStrategy {
     const otp = await this.otpService.generateOtp(data.email);
 
     return {
-      email: data.email,
-      message: 'OTP sent to your email',
-      role: data.role,
+       message: 'OTP sent to your email ',
+      data: {
+        email: data.email,
+        role: data.role,
+      },
     };
   }
 }

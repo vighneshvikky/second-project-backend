@@ -71,9 +71,8 @@ export class OtpService {
   ): Promise<ApiResponse<{ email: string; role: string }>> {
     const userKey = `temp_user:${data.email}`;
     const tempData = await this.redis.get(userKey);
-
     if (!tempData) {
-      throw new NotFoundException('User data not found or already verified');
+      throw new NotFoundException('User data not found ');
     }
 
     const newOtp = await this.generateOtp(data.email);

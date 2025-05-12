@@ -10,7 +10,8 @@ export class AuthController {
   constructor(
     readonly signupStratergyResolver: SignUpStrategyResolver,
     private readonly otpService: OtpService,
-  ) {}
+    
+  ) {  console.log('✅ AuthController loaded');}
   @Post('signup')
   async signUp(@Body() body: CreateAccountDto) {
     const stratergy = this.signupStratergyResolver.resolve(body.role);
@@ -27,6 +28,7 @@ export class AuthController {
 
   @Post('resend-otp')
   async resendOtp(@Body() body: ResendOtpDto) {
+    console.log('body', body)
     return await this.otpService.resendOtp(body);
   }
 }
