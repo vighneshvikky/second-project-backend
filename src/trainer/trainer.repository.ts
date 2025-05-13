@@ -22,4 +22,11 @@ export class TrainerRepository extends BaseRepository<Trainer> {
   async create(data: Partial<Trainer>): Promise<Trainer> {
     return this.model.create(data);
   }
+
+  async updatePassword(trainerId: string, newPassword: string){
+    await this.model.updateOne(
+      { _id: trainerId },
+      { $set: { password: newPassword } }
+    ).exec();
+  }
 }

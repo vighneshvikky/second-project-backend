@@ -7,6 +7,10 @@ import { OtpService } from './services/otp/otp.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+
+
 
 @Controller('auth')
 export class AuthController {
@@ -56,9 +60,39 @@ export class AuthController {
         name: user.name,
         role: user.role,
         email: user.email,
+        isBlocked: user.isBlocked
       }
     }
   }
 
+  @Post('forgot-password')
+async forgotPassword(@Body() { email, role }: ForgotPasswordDto) {
+  return this.authService.initiatePasswordReset(email, role);
+}
+
+@Post('reset-password')
+async resetPassword(@Body() dto:ResetPasswordDto){
+
+ const data =await this.authService.resetPassword(dto.token, dto.role, dto.newPassword);
+ console.log('data', data);
+ return data;
+}
 
 }
+
+
+
+// async resetPassword(token: string, role: string, newPassword: string): Promise<void> {
+//   const payload = this.jwtService.verifyPasswordResetToken(token);
+//   const userId = payload.sub;
+
+//   const hashedPassword = await this.hashService.hashPassword(newPassword);
+
+//   if (role === 'trainer') {
+//     await this.trainerService.updatePassword(userId, hashedPassword);
+//   } else {
+//     await this.userService.updatePassword(userId, hashedPassword);
+//   }
+
+//   // Optional: Invalidate token if stored in DB
+// }

@@ -9,4 +9,9 @@ export class TrainerService {
   async findByEmail(email: string): Promise<Trainer | null> {
     return this.trainerRepo.findByEmail(email);
   }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    await this.trainerRepo.updatePassword(userId, newPassword);
+  }
+
 }

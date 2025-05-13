@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthService } from './auth.service';
 import { JwtTokenService } from './services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
+import { MailModule } from 'src/common/helpers/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
     TrainerModule,
     RedisModule,
     OtpModule,
-    MailerModule,
+    MailModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your_jwt_secret',
       signOptions: { expiresIn: '15m' },

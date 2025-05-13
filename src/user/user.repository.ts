@@ -17,4 +17,11 @@ export class UserRepository extends BaseRepository<User> {
   async create(data: Partial<User>): Promise<User> {
     return this.model.create(data);
   }
+
+  async updatePassword(userId: string, newPassword: string){
+    await this.model.updateOne(
+      { _id: userId },
+      { $set: { password: newPassword } }
+    ).exec();
+  }
 }

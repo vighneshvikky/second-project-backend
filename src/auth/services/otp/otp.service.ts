@@ -30,7 +30,12 @@ export class OtpService {
     return otp;
   }
 
-  async verifyOtp(data: VerifyOtpDto): Promise<{message: string, isBlocked: boolean}> {
+  async verifyOtp(
+    data: VerifyOtpDto,
+  ): Promise<{
+    message: string;
+    data: { message: string; isBlocked: boolean; role: string };
+  }> {
     const storedOtp = await this.redis.get(`otp:${data.email}`);
 
     if (!storedOtp) {
@@ -41,11 +46,14 @@ export class OtpService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    const userKey = `temp_user:${data.email}`;
+    const userKey =
+      data.role === 'trainer'
+        ? `temp_trainer:${data.email}`
+        : `temp_user:${data.email}`;
     const tempData = await this.redis.get(userKey);
 
     if (!tempData) {
-      throw new NotFoundException('Temporary user data not found');
+      throw new NotFoundException('User data not found');
     }
 
     const parsedData = JSON.parse(tempData);
@@ -56,13 +64,17 @@ export class OtpService {
       await this.trainerRepo.create(parsedData);
     }
 
- 
     await this.redis.del(`otp:${data.email}`);
     await this.redis.del(userKey);
+    console.log(data.role);
 
     return {
       message: 'Account Created Successfully',
-      isBlocked: false
+      data: {
+        message: 'Account Created Successfully',
+        isBlocked: false,
+        role: data.role,
+      },
     };
   }
 

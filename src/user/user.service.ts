@@ -9,4 +9,9 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepo.findByEmail(email);
   }
+
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    await this.userRepo.updatePassword(userId, newPassword);
+  }
 }
