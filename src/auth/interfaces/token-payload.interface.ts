@@ -1,4 +1,4 @@
 export interface TokenPayload {
   sub: string;       
-  role: 'user' | 'trainer';
+  role: 'user' | 'trainer' | 'admin';
 }
