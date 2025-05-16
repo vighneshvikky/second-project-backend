@@ -14,6 +14,7 @@ export class AuthService {
     private trainerService: TrainerService,
     private jwtService: JwtTokenService,
     private mailService: MailService,
+
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
   async verifyLogin(body: LoginDto) {
@@ -28,8 +29,11 @@ export class AuthService {
     if(!user){
       throw new UnauthorizedException('User not found')
     }
+  
 
-    if ( !PasswordUtil.comparePassword(body.password, user.password)) {
+  
+
+    if ( !await PasswordUtil.comparePassword(body.password , user.password)) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -41,8 +45,6 @@ export class AuthService {
       sub: user._id,
       role: user.role,
     });
-    // console.log('accessToken', accessToken);
-    // console.log('refreshToken', refreshToken);
     await this.redis.set(
       refreshToken,
       user._id.toString(),

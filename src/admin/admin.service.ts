@@ -6,6 +6,9 @@ import { Inject } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { TrainerRepository } from '../trainer/trainer.repository';
 import { PaginatedResult } from '../common/repositories/base.repository';
+import { User } from 'src/user/schemas/user.schema';
+import { Trainer } from 'src/trainer/schemas/trainer.schema';
+
 
 interface GetUsersOptions {
   search?: string;
@@ -16,8 +19,8 @@ interface GetUsersOptions {
 
 @Injectable()
 export class AdminService {
-  private readonly adminEmail = 'vadmin@gmail.com';
-  private readonly adminPassword = 'Vor@1234';
+  private readonly adminEmail = process.env.ADMIN_EMAIL!;
+  private readonly adminPassword = process.env.ADMIN_PASSWORD!;
 
   constructor(
     private jwtService: JwtTokenService,
@@ -26,12 +29,13 @@ export class AdminService {
     private readonly trainerRepository: TrainerRepository,
   ) {}
 
-  async verifyAdminLogin(email: string, password: string) {
+  async verifyAdminLogin(email: string, password: string) {4
+
     if (email !== this.adminEmail) {
       throw new UnauthorizedException('Invalid admin credentials');
     }
 
-    if (!PasswordUtil.comparePassword(password, await PasswordUtil.hashPassword(this.adminPassword))) {
+    if (!await PasswordUtil.comparePassword(password, this.adminPassword)) {
       throw new UnauthorizedException('Invalid admin credentials');
     }
 
@@ -45,7 +49,7 @@ export class AdminService {
       role: 'admin',
     });
 
-    // Store refresh token in Redis with 7 days expiry
+    
     const refreshTokenTTL = 7 * 24 * 60 * 60;
     await this.redis.set(
       refreshToken,
@@ -57,7 +61,7 @@ export class AdminService {
     return { accessToken, refreshToken };
   }
 
-  async getUsers({ search, role, page = 1, limit = 10 }: GetUsersOptions): Promise<PaginatedResult<any>> {
+  async getUsers<T extends User | Trainer>({ search, role, page = 1, limit = 10 }: GetUsersOptions): Promise<PaginatedResult<T>> {
     const searchQuery = search ? {
       $or: [
         { name: { $regex: search, $options: 'i' } },
@@ -66,9 +70,9 @@ export class AdminService {
     } : {};
 
     if (role === 'user') {
-      return this.userRepository.findPaginated(searchQuery, { page, limit });
+      return this.userRepository.findPaginated(searchQuery, { page, limit }) as Promise<PaginatedResult<T>>;
     } else if (role === 'trainer') {
-      return this.trainerRepository.findPaginated(searchQuery, { page, limit });
+      return this.trainerRepository.findPaginated(searchQuery, { page, limit }) as Promise<PaginatedResult<T>>;
     } else {
       const [userResult, trainerResult] = await Promise.all([
         this.userRepository.findPaginated(searchQuery, { page, limit }),
@@ -76,7 +80,7 @@ export class AdminService {
       ]);
 
       return {
-        data: [...userResult.data, ...trainerResult.data],
+        data: [...userResult.data, ...trainerResult.data] as T[],
         total: userResult.total + trainerResult.total,
         page,
         limit,

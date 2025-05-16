@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
 import { CreateAccountDto } from './dto/createAccount.dto';
 import { SignUpStrategyResolver } from './strategies/signup-strategy.resolver';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
@@ -12,12 +12,14 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 
 
 
+
 @Controller('auth')
 export class AuthController {
   constructor(
     readonly signupStratergyResolver: SignUpStrategyResolver,
     private readonly otpService: OtpService,
     private readonly authService: AuthService,
+
   ) {
     console.log('✅ AuthController loaded');
   }
@@ -78,21 +80,18 @@ async resetPassword(@Body() dto:ResetPasswordDto){
  return data;
 }
 
+// auth.controller.ts
+@Post('google')
+@HttpCode(HttpStatus.OK)
+googleLogin(@Res() res: Response, @Body('role') role: string) {
+
 }
 
 
 
-// async resetPassword(token: string, role: string, newPassword: string): Promise<void> {
-//   const payload = this.jwtService.verifyPasswordResetToken(token);
-//   const userId = payload.sub;
 
-//   const hashedPassword = await this.hashService.hashPassword(newPassword);
+}
 
-//   if (role === 'trainer') {
-//     await this.trainerService.updatePassword(userId, hashedPassword);
-//   } else {
-//     await this.userService.updatePassword(userId, hashedPassword);
-//   }
 
-//   // Optional: Invalidate token if stored in DB
-// }
+
+

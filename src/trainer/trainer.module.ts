@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Trainer, TrainerSchema } from './schemas/trainer.schema';
 import { TrainerRepository } from './trainer.repository';
 import { TrainerService } from './trainer.service';
+import { AwsS3Service } from 'src/common/services/aws-s3.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { TrainerService } from './trainer.service';
       },
     ]),
   ],
-  providers: [TrainerRepository, TrainerService],
+  providers: [TrainerRepository, TrainerService, AwsS3Service],
   controllers: [TrainerController],
   exports: [TrainerRepository, TrainerService]
 })

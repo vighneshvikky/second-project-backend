@@ -13,6 +13,7 @@ import { JwtTokenService } from './services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/common/helpers/mailer/mailer.module';
 
+
 @Module({
   imports: [
     UserModule,
@@ -32,6 +33,7 @@ import { MailModule } from 'src/common/helpers/mailer/mailer.module';
     UserSignUpStrategy,
     AuthService,
     JwtTokenService,
+  
   ],
 })
 export class AuthModule {}

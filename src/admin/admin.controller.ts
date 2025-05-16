@@ -30,12 +30,11 @@ export class AdminController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000, 
     });
 
     return {
       message: 'Admin login successful',
-      refreshToken, 
     };
   }
 
@@ -64,4 +63,7 @@ export class AdminController {
   ) {
     return this.adminService.toggleBlockStatus(id, role);
   }
+
+
+  
 } 

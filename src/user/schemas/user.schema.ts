@@ -9,13 +9,16 @@ export class User extends Document {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
-  password: string;
+  @Prop({ required: false })
+  password?: string;
 
   @Prop({ required: true, enum: ['user', 'trainer'] })
   role: 'user' | 'trainer';
 
-  @Prop({default: false})
+  @Prop({ default: 'local', enum: ['local', 'google'] })
+  provider: 'local' | 'google';
+
+  @Prop({ default: false })
   isBlocked: boolean;
 }
 

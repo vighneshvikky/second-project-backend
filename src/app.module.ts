@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from './redis.module';
 import { MailModule } from './common/helpers/mailer/mailer.module';
 import { AdminModule } from './admin/admin.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AdminModule } from './admin/admin.module';
     UserModule,
     MailModule,
     AdminModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

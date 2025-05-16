@@ -1,30 +1,106 @@
+// src/auth/google-auth.service.ts
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { OAuth2Client } from 'google-auth-library';
+import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service'; // Adjust path
+
 @Injectable()
-export class AuthService {
+export class GoogleAuthService {
+  private client: OAuth2Client;
+
   constructor(
-    private userService: UserService,
-    private trainerService: TrainerService,
-    private jwtService: JwtService,
-    private refreshTokenStore: RefreshTokenStore,
-  ) {}
-
-  async verifyLogin(dto: LoginDto) {
-    let user: AuthUser | null;
-
-    if (dto.role === 'trainer') {
-      user = await this.trainerService.findByEmail(dto.email);
-    } else {
-      user = await this.userService.findByEmail(dto.email);
-    }
-
-    if (!user || !this.validatePassword(dto.password, user.password)) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const accessToken = this.jwtService.sign({ sub: user._id, role: user.role }, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign({ sub: user._id, role: user.role }, { expiresIn: '7d' });
-
-    await this.refreshTokenStore.save(user._id, refreshToken);
-
-    return { accessToken, refreshToken };
+    private configService: ConfigService,
+    private usersService: UsersService,
+  ) {
+    this.client = new OAuth2Client(this.configService.get('GOOGLE_CLIENT_ID'));
   }
+
+  async verifyGoogleToken(idToken: string) {
+    const ticket = await this.client.verifyIdToken({
+      idToken,
+      audience: this.configService.get('GOOGLE_CLIENT_ID'),
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload?.email_verified) {
+      throw new UnauthorizedException('Google email not verified');
+    }
+
+    // Check if user exists or create new one
+    let user = await this.usersService.findByEmail(payload.email);
+    if (!user) {
+      user = await this.usersService.createFromGoogle(payload);
+    }
+
+    // Return app-specific JWT (implement your own JWT service here)
+    const token = this.usersService.generateJwt(user); 
+    return { token, user };
+  }
+}
+
+
+
+
+coookiew
+
+// google-auth.service.ts
+async verifyGoogleToken(idToken: string, role: 'user' | 'trainer') {
+  const ticket = await this.client.verifyIdToken({
+    idToken,
+    audience: this.configService.get('GOOGLE_CLIENT_ID'),
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload?.email_verified) {
+    throw new UnauthorizedException('Email not verified');
+  }
+
+  const email = payload.email;
+  const name = payload.name;
+  const picture = payload.picture;
+
+  let user;
+  if (role === 'user') {
+    user = await this.usersService.findByEmail(email);
+    if (!user) {
+      user = await this.usersService.createFromGoogle({ email, name, role, picture });
+    }
+  } else if (role === 'trainer') {
+    user = await this.trainersService.findByEmail(email);
+    if (!user) {
+      user = await this.trainersService.createFromGoogle({ email, name, role, picture });
+    }
+  } else {
+    throw new BadRequestException('Invalid role');
+  }
+
+  const token = this.jwtService.sign({
+    sub: user._id,
+    email: user.email,
+    role: user.role,
+  });
+
+  return { token, user };
+}
+
+
+
+/jilbullljillbull
+
+
+
+async createFromGoogle(payload: {
+  email: string | undefined;
+  name: string | undefined;
+  picture?: string;
+}): Promise<User> {
+  if (!payload.email || !payload.name) {
+    throw new BadRequestException('Email and name are required');
+  }
+
+  return this.userRepo.createFromGoogle({
+    email: payload.email,
+    name: payload.name,
+    picture: payload.picture,
+  });
 }
