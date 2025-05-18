@@ -90,9 +90,11 @@ export class AdminService {
   }
 
   async toggleBlockStatus(id: string, role: 'user' | 'trainer'): Promise<{ message: string; isBlocked: boolean }> {
+    console.log('role for toglle', role)
     if (role === 'user') {
       const user = await this.userRepository.findById(id);
       if (!user) {
+        console.log('ahi')
         throw new NotFoundException('User not found');
       }
       const updatedUser = await this.userRepository.updateById(id, { isBlocked: !user.isBlocked });

@@ -21,7 +21,7 @@ export class TrainerController {
   constructor(private readonly awsS3Service: AwsS3Service, private readonly trainerService: TrainerService) {}
 
   @Patch('profile/:id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'idProof', maxCount: 1 },
@@ -37,6 +37,7 @@ export class TrainerController {
       certification?: Express.Multer.File[];
     },
   ) {
+    console.log('trainerId', trainerId)
      return this.trainerService.updateTrainerProfile(trainerId, dto, files);
   }
 }

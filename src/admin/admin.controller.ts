@@ -78,26 +78,17 @@ export class AdminController {
   async getUsers(
  @Query() query: GetUsersQueryDto
   ) {
-    // const params: GetUsersQuery = {
-    //   search: search || '',
-    //   role: role && (role === 'user' || role === 'trainer') ? role : undefined,
-    //   page: page ? Number(page) : 1,
-    //   limit: limit ? Number(limit) : 10,
-    // };
-
-    // const data = await this.adminService.getUsers(params);
-    // return data;
-
     return this.adminService.getUsers(query);
   }
 
+  
   @Patch('users/:id/toggle-block')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
   async toggleBlockStatus(
     @Param('id') id: string,
     @Query('role') role: 'user' | 'trainer',
   ) {
+    console.log('id', id);
+    console.log('role', role)
     return this.adminService.toggleBlockStatus(id, role);
   }
 

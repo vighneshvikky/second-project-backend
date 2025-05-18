@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
-import { logger } from './common/logger/winston-logger';
+// import { logger } from './common/logger/winston-logger';
 dotenv.config();
 
 async function bootstrap() {
@@ -15,11 +15,7 @@ async function bootstrap() {
     credentials: true,
   });
     app.use(
-    morgan('combined', {
-      stream: {
-        write: (message: string) => logger.info(message.trim()),
-      },
-    }),
+    morgan(),
   );
   app.useGlobalPipes(
     new ValidationPipe({
