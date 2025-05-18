@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { UserService } from 'src/user/user.service';
 import { TrainerService } from 'src/trainer/trainer.service';
@@ -18,22 +24,22 @@ export class AuthService {
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
   async verifyLogin(body: LoginDto) {
-     let user;
+    console.log('vefrigiing')
+    let user;
     const refreshTokenTTL = 7 * 24 * 60 * 60;
+    console.log('body.role', body.role)
     if (body.role === 'trainer') {
       user = await this.trainerService.findByEmail(body.email);
     } else {
       user = await this.userService.findByEmail(body.email);
     }
-   
-    if(!user){
-      throw new UnauthorizedException('User not found')
+ console.log('user for login', user)
+    if (!user) {
+      console.log('ahi')
+      throw new UnauthorizedException('User not found');
     }
-  
 
-  
-
-    if ( !await PasswordUtil.comparePassword(body.password , user.password)) {
+    if (!(await PasswordUtil.comparePassword(body.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -52,7 +58,7 @@ export class AuthService {
       refreshTokenTTL,
     );
 
-    return { accessToken, user };
+    return { accessToken, refreshToken, user };
   }
 
   async initiatePasswordReset(email: string, role: string) {
@@ -61,44 +67,72 @@ export class AuthService {
         ? await this.trainerService.findByEmail(email)
         : await this.userService.findByEmail(email);
 
-        if(!user){
-          throw new NotFoundException('User not found');
-        }
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-        const token = this.jwtService.signPasswordResetToken({sub: user.id, role: user.role});
+    const token = this.jwtService.signPasswordResetToken({
+      sub: user.id,
+      role: user.role,
+    });
 
-        const resetUrl = `http://localhost:4200/auth/reset-password?token=${token}&role=${role}`
+    const resetUrl = `http://localhost:4200/auth/reset-password?token=${token}&role=${role}`;
 
-        await this.mailService.sendResetLink(user.email, resetUrl)
+    await this.mailService.sendResetLink(user.email, resetUrl);
 
-        return {
-          message: 'Password reset link sent to your email',
-          data: null,
-        };
+    return {
+      message: 'Password reset link sent to your email',
+      data: null,
+    };
   }
 
-async resetPassword(token: string, role: string, password: string){
+  async resetPassword(token: string, role: string, password: string) {
+    console.log('rold befor sem', role);
+    if (!password) {
+      throw new BadRequestException('Password is required');
+    }
 
-console.log('rold befor sem', role)
-  if (!password) {
-    throw new BadRequestException('Password is required');
-  }
-  
-  const payload = this.jwtService.verifyPasswordResetToken(token);
+    const payload = this.jwtService.verifyPasswordResetToken(token);
 
-  const userId = payload.sub;
+    const userId = payload.sub;
 
-  const hashedPassword = await PasswordUtil.hashPassword(password)
-   console.log('hashe', hashedPassword)
-  if(role === 'trainer'){
-    await this.trainerService.updatePassword(userId, hashedPassword)
-  }else{
-    await this.userService.updatePassword(userId, hashedPassword)
+    const hashedPassword = await PasswordUtil.hashPassword(password);
+    console.log('hashe', hashedPassword);
+    if (role === 'trainer') {
+      await this.trainerService.updatePassword(userId, hashedPassword);
+    } else {
+      await this.userService.updatePassword(userId, hashedPassword);
+    }
+    return {
+      message: 'Password has been reset successfully',
+      data: { role },
+    };
   }
-  return {
-    message: 'Password has been reset successfully',
-    data: {role}
+
+  async rotateRefreshToken(
+    oldToken: string,
+    role: 'user' | 'trainer' | 
+    'admin',
+  ): Promise<{ accessToken: string; newRefreshToken: string }> {
+    const userId = await this.redis.get(oldToken);
+    if (!userId) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    await this.redis.del(oldToken);
+
+    const accessToken = this.jwtService.signAccessToken({
+      sub: userId,
+      role: role,
+    });
+
+    const newRefreshToken = this.jwtService.signRefreshToken({
+      sub: userId,
+      role,
+    });
+
+    await this.redis.set(newRefreshToken, userId, 'EX', 7 * 24 * 60 * 60);
+
+    return { accessToken, newRefreshToken };
   }
-}
-  
 }

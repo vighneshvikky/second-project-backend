@@ -50,7 +50,7 @@ export class AdminService {
     });
 
     
-    const refreshTokenTTL = 7 * 24 * 60 * 60;
+    const refreshTokenTTL = 7 * 24 * 60 * 60 * 1000;
     await this.redis.set(
       refreshToken,
       'admin',
@@ -113,4 +113,30 @@ export class AdminService {
     }
     throw new NotFoundException('Invalid role specified');
   }
+
+  async getUnverifiedTrainers({ page = 1, limit = 10 }: GetUsersOptions): Promise<PaginatedResult<Trainer>> {
+    const query = { isVerified: false };
+    return this.trainerRepository.findPaginated(query, { page, limit });
+  }
+
+  async approveTrainer(trainerId: string): Promise<Trainer> {
+    return this.trainerRepository.updateById(trainerId, {
+      isVerified: true,
+      verificationStatus: 'approved',
+      verifiedAt: new Date(),
+    });
+  }
+
+
+  async rejectTrainer(trainerId: string, reason: string): Promise<Trainer> {
+    return this.trainerRepository.updateById(trainerId, {
+      isVerified: false,
+      verificationStatus: 'rejected',
+      rejectionReason: reason,
+      rejectedAt: new Date(),
+    });
+  }
+  
+  
+  
 } 

@@ -21,14 +21,22 @@ export class Trainer extends Document {
   @Prop({ default: false })
   isBlocked: boolean;
 
-  // New fields for trainer profile
-  @Prop({ required: true })
+  @Prop({ default: false })
+  isVerified: boolean;
+
+  @Prop({ enum: ['pending', 'approved', 'rejected'], default: 'pending' })
+  verificationStatus: 'pending' | 'approved' | 'rejected';
+
+  @Prop()
   phoneNumber: string;
 
-  @Prop({ required: true })
+  @Prop()
+  verifiedAt?: Date;
+
+  @Prop()
   specialization: string;
 
-  @Prop({ required: true })
+  @Prop()
   experience: number;
 
   @Prop({ required: false, maxlength: 1000 })
@@ -37,8 +45,14 @@ export class Trainer extends Document {
   @Prop({ required: false })
   certificationUrl?: string;
 
-  @Prop({ required: true })
+  @Prop()
   idProofUrl: string;
+
+  @Prop()
+  rejectionReason?: string;
+
+  @Prop()
+  rejectedAt?: Date;
 }
 
 export const TrainerSchema = SchemaFactory.createForClass(Trainer);

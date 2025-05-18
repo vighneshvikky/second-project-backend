@@ -81,15 +81,20 @@ export class OtpService {
   async resendOtp(
     data: ResendOtpDto,
   ): Promise<ApiResponse<{ email: string; role: string }>> {
-    const userKey = `temp_user:${data.email}`;
+    
+
+        const userKey =
+      data.role === 'trainer'
+        ? `temp_trainer:${data.email}`
+        : `temp_user:${data.email}`;
     const tempData = await this.redis.get(userKey);
     if (!tempData) {
       throw new NotFoundException('User data not found ');
     }
 
-    const newOtp = await this.generateOtp(data.email);
+    await this.generateOtp(data.email);
 
-    await this.redis.set(`otp:${data.email}`, newOtp, 'EX', 300);
+    // await this.redis.set(`otp:${data.email}`, newOtp, 'EX', 300);
 
     return {
       message: 'OTP resent successfully',

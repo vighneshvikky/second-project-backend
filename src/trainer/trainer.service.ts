@@ -24,21 +24,7 @@ export class TrainerService {
     return this.trainerRepo.create(payload);
   }
 
-  async createFromGoogle(payload: {
-    email: string | undefined;
-    name: string | undefined;
-    picture?: string;
-  }): Promise<Trainer> {
-      if (!payload.email || !payload.name) {
-        throw new BadRequestException('Email and name are required');
-      }
-    
-    return this.trainerRepo.createFromGoogle({
-      email: payload.email,
-      name: payload.name,
-      picture: payload.picture
-    });
-  }
+
   async createTrainingRequest(dto: TrainingRequest): Promise<Trainer> {
     return this.trainerRepo.create(dto);
   }
@@ -93,6 +79,8 @@ export class TrainerService {
     bio: dto.bio || '',
     idProofUrl,
     certificationUrl,
+    isVerified: false,
+    verificationStatus: 'pending',
   });
 
   return updatedTrainer;

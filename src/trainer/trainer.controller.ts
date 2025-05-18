@@ -7,18 +7,21 @@ import {
   Body,
   BadRequestException,
   UseInterceptors,
-  Patch
+  Patch,
+  UseGuards
 } from '@nestjs/common';
 import { Request } from 'express';
 import { TrainerService } from './trainer.service';
 import { TrainingRequest } from './trainer.dto';  
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AwsS3Service } from '../common/services/aws-s3.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 @Controller('trainers')
 export class TrainerController {
   constructor(private readonly awsS3Service: AwsS3Service, private readonly trainerService: TrainerService) {}
 
   @Patch('profile/:id')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'idProof', maxCount: 1 },

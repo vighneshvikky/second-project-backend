@@ -28,18 +28,7 @@ export class TrainerRepository extends BaseRepository<Trainer> {
       .exec();
   }
 
-  async createFromGoogle(payload: {
-    email: string;
-    name: string;
-    picture?: string;
-  }) {
-    return this.create({
-      email: payload.email,
-      name: payload.name,
-      role: 'trainer',
-      provider: 'google',
-    });
-  }
+
 
   async createTrainerWithFiles(data: {
     name: string;
