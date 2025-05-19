@@ -24,7 +24,7 @@ export class AuthService {
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
   async verifyLogin(body: LoginDto) {
-    console.log('vefrigiing')
+    
     let user;
     const refreshTokenTTL = 7 * 24 * 60 * 60;
     console.log('body.role', body.role)
@@ -33,13 +33,14 @@ export class AuthService {
     } else {
       user = await this.userService.findByEmail(body.email);
     }
- console.log('user for login', user)
+
     if (!user) {
-      console.log('ahi')
+
       throw new UnauthorizedException('User not found');
     }
 
     if (!(await PasswordUtil.comparePassword(body.password, user.password))) {
+      console.log('validation successfully')
       throw new UnauthorizedException('Invalid credentials');
     }
 

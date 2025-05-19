@@ -59,8 +59,6 @@ export class AuthController {
     console.log('user body', body);
     const { accessToken, refreshToken, user } =
       await this.authService.verifyLogin(body);
-console.log('access_token',accessToken);
-console.log('refresh')
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
