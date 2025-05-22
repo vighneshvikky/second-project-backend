@@ -69,10 +69,7 @@ export class AdminController {
     };
   }
 
-//   @Get('users')
-// async getUsers(@Query() query: GetUsersQueryDto) {
-//   return this.adminService.getUsers(query);
-// }
+
 
   @Get('users')
   async getUsers(
@@ -98,9 +95,8 @@ export class AdminController {
   async listTrainers(
    @Query() query: GetUsersQueryDto
   ) {
-    console.log('list traineer query', query);
+   
     const data = await this.adminService.getUnverifiedTrainers(query);
-    console.log('list traineer data', data);
     return data;
   }
 

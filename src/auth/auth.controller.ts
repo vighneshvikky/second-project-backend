@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -19,6 +21,8 @@ import { Request, Response } from 'express';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtTokenService } from './services/jwt/jwt.service';
+import { GoogleLoginDto } from './dto/google-login.dto';
+import { setTokenCookies } from 'src/common/helpers/token.setter';
 
 @Controller('auth')
 export class AuthController {
@@ -72,15 +76,11 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    
+
     return {
       message: 'Login successfully',
       data: {
-        id: user._id,
-        name: user.name,
-        role: user.role,
-        email: user.email,
-        isBlocked: user.isBlocked,
+        user,
       },
     };
   }
@@ -108,7 +108,6 @@ export class AuthController {
       throw new UnauthorizedException('Refresh token missing');
     }
 
-  
     const payload = this.jwtService.decodeToken(refreshToken);
 
     if (!payload?.sub || !payload?.role) {
@@ -118,23 +117,50 @@ export class AuthController {
     const { accessToken, newRefreshToken } =
       await this.authService.rotateRefreshToken(refreshToken, payload.role);
 
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie('refresh_token', newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    setTokenCookies(res, accessToken, newRefreshToken);
 
     return res.send({
       message: 'Tokens refreshed',
       role: payload.role,
     });
+  }
+
+  @Get('google/redirect')
+  redirectGoogle(@Query('role') role: string, @Res() res: Response) {
+    console.log('Redirect URI:', process.env.GOOGLE_REDIRECT_URI);
+
+    const redirectUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    redirectUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID!);
+    redirectUrl.searchParams.set(
+      'redirect_uri',
+      process.env.GOOGLE_REDIRECT_URI!,
+    );
+    redirectUrl.searchParams.set('response_type', 'code');
+    redirectUrl.searchParams.set('scope', 'openid email profile');
+    redirectUrl.searchParams.set('state', role);
+
+    return res.redirect(redirectUrl.toString());
+  }
+
+  @Get('google/callback')
+  async handleGoogleCallback(
+    @Query('code') code: string,
+    @Query('state') role: string,
+    @Res() res: Response,
+  ) {
+    const { accessToken, refreshToken, user } =
+      await this.authService.googleLogin(code, role);
+
+    setTokenCookies(res, accessToken, refreshToken);
+
+    const redirectUrl = new URL('http://localhost:4200/auth/callback');
+    redirectUrl.searchParams.set('email', user.email);
+    redirectUrl.searchParams.set('name', user.name);
+    redirectUrl.searchParams.set('role', user.role);
+    redirectUrl.searchParams.set('isVerified', String(user.isVerified));
+
+    return res.redirect(
+      `http://localhost:4200/auth/callback?user=${encodeURIComponent(JSON.stringify(user))}`,
+    );
   }
 }

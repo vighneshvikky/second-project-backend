@@ -86,4 +86,5 @@ export class TrainerService {
   return updatedTrainer;
   }
 
+
 }

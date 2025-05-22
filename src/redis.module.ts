@@ -10,6 +10,7 @@ import Redis from 'ioredis';
       provide: 'REDIS_CLIENT',
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        
         const host = configService.get<string>('REDIS_HOST');
         const port = configService.get<number>('REDIS_PORT');
         const password = configService.get<string>('REDIS_PASSWORD');

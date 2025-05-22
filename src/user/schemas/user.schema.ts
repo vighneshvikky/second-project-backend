@@ -20,6 +20,15 @@ export class User extends Document {
 
   @Prop({ default: false })
   isBlocked: boolean;
+
+  @Prop({ default: false })
+  isVerified: false;
+
+  @Prop()
+  googleId?: string;
+
+  @Prop()
+  image: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

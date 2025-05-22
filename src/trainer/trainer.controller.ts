@@ -37,7 +37,6 @@ export class TrainerController {
       certification?: Express.Multer.File[];
     },
   ) {
-    console.log('trainerId', trainerId)
      return this.trainerService.updateTrainerProfile(trainerId, dto, files);
   }
 }

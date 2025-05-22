@@ -52,7 +52,13 @@ export class Trainer extends Document {
   rejectionReason?: string;
 
   @Prop()
+  googleId?: string;
+
+  @Prop()
   rejectedAt?: Date;
+
+  @Prop()
+  image: string;
 }
 
 export const TrainerSchema = SchemaFactory.createForClass(Trainer);
