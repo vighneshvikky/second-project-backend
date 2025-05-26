@@ -78,7 +78,13 @@ export abstract class BaseRepository<T extends Document> {
     return updated;
   }
 
+  async updatePassword(userId: string, newPassword: string) {
+    await this.model
+      .updateOne({ _id: userId }, { $set: { password: newPassword } })
+      .exec();
+  }
 
+  
 
 
 }

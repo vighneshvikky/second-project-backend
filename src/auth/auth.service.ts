@@ -35,7 +35,6 @@ export class AuthService {
   async verifyLogin(body: LoginDto) {
     let user;
     const refreshTokenTTL = 7 * 24 * 60 * 60;
-    console.log('body.role', body.role);
     if (body.role === 'trainer') {
       user = await this.trainerService.findByEmail(body.email);
     } else {
@@ -122,6 +121,7 @@ export class AuthService {
     role: 'user' | 'trainer' | 'admin',
   ): Promise<{ accessToken: string; newRefreshToken: string }> {
     const userId = await this.redis.get(oldToken);
+    console.log('userId', userId);
     if (!userId) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
@@ -273,7 +273,10 @@ export class AuthService {
       'EX',
       refreshTokenTTL,
     );
-    console.log('user from google user ===>    ', user);
     return { accessToken, refreshToken, user };
+  }
+
+  async getUser(id: string){
+return this.trainerRepo.findById(id)
   }
 }

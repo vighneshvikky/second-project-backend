@@ -14,19 +14,5 @@ export class UserService {
     await this.userRepo.updatePassword(userId, newPassword);
   }
 
- async createFromGoogle(payload: {
-  email: string | undefined;
-  name: string | undefined;
-  picture?: string;
-}): Promise<User> {
-  if (!payload.email || !payload.name) {
-    throw new BadRequestException('Email and name are required');
-  }
 
-  return this.userRepo.createFromGoogle({
-    email: payload.email,
-    name: payload.name,
-    picture: payload.picture,
-  });
-}
 }

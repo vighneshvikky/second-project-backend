@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
-// import { logger } from './common/logger/winston-logger';
+
 dotenv.config();
 
 async function bootstrap() {
@@ -14,9 +14,8 @@ async function bootstrap() {
     origin: ['http://localhost:4200'],
     credentials: true,
   });
-    app.use(
-    morgan(),
-  );
+
+  // app.use(morgan());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

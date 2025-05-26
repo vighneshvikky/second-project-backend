@@ -16,6 +16,8 @@ import { BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
+import { setTokenCookies } from 'src/common/helpers/token.setter';
+import { LoginAdminDto } from 'src/auth/dto/admin.dto';
 
 class AdminLoginDto {
   email: string;
@@ -35,88 +37,73 @@ export class AdminController {
 
   @Post('login')
   async login(
-    @Body() loginDto: any,
+    @Body() loginDto: LoginAdminDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    
     const { accessToken, refreshToken } =
       await this.adminService.verifyAdminLogin(
         loginDto.email,
         loginDto.password,
       );
-
-    response.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
-    });
-
-        response.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
+    console.log('acces', accessToken);
+    console.log('refresh', refreshToken);
+    setTokenCookies(response, accessToken, refreshToken);
     return {
       message: 'Admin login successful',
       data: {
-        id: '1234',
+        id: 'f123456',
         email: loginDto.email,
-        role: 'admin'
-      }
+        role: 'admin',
+      },
     };
   }
 
-
-
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Get('users')
-  async getUsers(
- @Query() query: GetUsersQueryDto
-  ) {
+  async getUsers(@Query() query: GetUsersQueryDto) {
+    
     return this.adminService.getUsers(query);
   }
 
-  
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch('users/:id/toggle-block')
   async toggleBlockStatus(
     @Param('id') id: string,
     @Query('role') role: 'user' | 'trainer',
   ) {
     console.log('id', id);
-    console.log('role', role)
+    console.log('role', role);
     return this.adminService.toggleBlockStatus(id, role);
   }
 
-
-
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Get('listTrainers')
-  async listTrainers(
-   @Query() query: GetUsersQueryDto
-  ) {
-   
+  async listTrainers(@Query() query: GetUsersQueryDto) {
     const data = await this.adminService.getUnverifiedTrainers(query);
     return data;
   }
 
-
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch('verify-trainer/:trainerId')
-async approveTrainer(@Param('trainerId') trainerId: string) {
-  return this.adminService.approveTrainer(trainerId);
-}
-
-
-@Patch('reject-trainer/:trainerId')
-async rejectTrainer(
-  @Param('trainerId') trainerId: string,
-  @Body('reason') reason: string,
-) {
-  if (!reason || reason.trim() === '') {
-    throw new BadRequestException('Rejection reason is required');
+  async approveTrainer(@Param('trainerId') trainerId: string) {
+    return this.adminService.approveTrainer(trainerId);
   }
 
-  return this.adminService.rejectTrainer(trainerId, reason);
-}
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Patch('reject-trainer/:trainerId')
+  async rejectTrainer(
+    @Param('trainerId') trainerId: string,
+    @Body('reason') reason: string,
+  ) {
+    if (!reason || reason.trim() === '') {
+      throw new BadRequestException('Rejection reason is required');
+    }
 
+    return this.adminService.rejectTrainer(trainerId, reason);
+  }
 }

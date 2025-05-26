@@ -14,29 +14,13 @@ export class TrainerRepository extends BaseRepository<Trainer> {
     super(model);
   }
 
-  async findByEmail(email: string): Promise<Trainer | null> {
-    return this.model.findOne({ email }).exec();
-  }
-
-  async create(data: Partial<Trainer>): Promise<Trainer> {
-    return this.model.create(data);
-  }
-
-  async updatePassword(trainerId: string, newPassword: string) {
-    await this.model
-      .updateOne({ _id: trainerId }, { $set: { password: newPassword } })
-      .exec();
-  }
-
-
-
   async createTrainerWithFiles(data: {
     name: string;
     email: string;
     phoneNumber: string;
     specialization: string;
     experience: number;
-    bio: string;  
+    bio: string;
     idProofUrl: string;
     certificationUrl: string;
   }): Promise<Trainer> {
@@ -50,20 +34,21 @@ export class TrainerRepository extends BaseRepository<Trainer> {
     return this.model.findById(id).exec();
   }
 
-  async updateTrainerWithFiles(id: string, data: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    specialization: string;
-    experience: number;
-    bio: string;
-    idProofUrl: string;
-    certificationUrl: string;
-  }): Promise<Trainer | null> {
-    return this.model.findByIdAndUpdate(
-      id,
-      { $set: data },
-      { new: true }
-    ).exec();
+  async updateTrainerWithFiles(
+    id: string,
+    data: {
+      name: string;
+      email: string;
+      phoneNumber: string;
+      specialization: string;
+      experience: number;
+      bio: string;
+      idProofUrl: string;
+      certificationUrl: string;
+    },
+  ): Promise<Trainer | null> {
+    return this.model
+      .findByIdAndUpdate(id, { $set: data }, { new: true })
+      .exec();
   }
 }

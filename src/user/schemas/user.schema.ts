@@ -29,6 +29,39 @@ export class User extends Document {
 
   @Prop()
   image: string;
+
+  @Prop()
+  dob: string;
+
+  @Prop()
+  height: string;
+
+  @Prop()
+  heightUnit: string;
+
+  @Prop()
+  weight: string;
+
+  @Prop()
+  weightUnit: string;
+
+  @Prop()
+  fitnessLevel: string;
+
+  @Prop({ type: [String], default: [] })
+  fitnessGoals: string[];
+
+  @Prop({ type: [String], default: [] })
+  trainingTypes: string[];
+
+  @Prop({ default: '3-4' })
+  workoutsPerWeek: string;
+
+  @Prop({ default: 'flexible' })
+  preferredTime: string;
+
+  @Prop({ type: [String], default: [] })
+  equipments: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -5,7 +5,7 @@ export function setTokenCookies(res: Response, accessToken: string, refreshToken
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
     res.cookie('refresh_token', refreshToken, {
@@ -15,3 +15,6 @@ export function setTokenCookies(res: Response, accessToken: string, refreshToken
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 }
+
+
+

@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateAccountDto } from './dto/createAccount.dto';
 import { SignUpStrategyResolver } from './strategies/signup-strategy.resolver';
@@ -23,6 +24,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtTokenService } from './services/jwt/jwt.service';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { setTokenCookies } from 'src/common/helpers/token.setter';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -63,20 +65,9 @@ export class AuthController {
     console.log('user body', body);
     const { accessToken, refreshToken, user } =
       await this.authService.verifyLogin(body);
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
-    });
+ 
 
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
+     setTokenCookies(res, accessToken, refreshToken)
     return {
       message: 'Login successfully',
       data: {
@@ -103,13 +94,15 @@ export class AuthController {
 
   @Post('refresh/token')
   async refreshToken(@Req() req: Request, @Res() res: Response) {
+    console.log('redirected to refresh token....');
     const refreshToken = req.cookies['refresh_token'];
+    console.log('refreshToken', refreshToken)
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token missing');
     }
 
     const payload = this.jwtService.decodeToken(refreshToken);
-
+    console.log('payload', payload);
     if (!payload?.sub || !payload?.role) {
       throw new UnauthorizedException('Invalid refresh token payload');
     }
@@ -118,7 +111,7 @@ export class AuthController {
       await this.authService.rotateRefreshToken(refreshToken, payload.role);
 
     setTokenCookies(res, accessToken, newRefreshToken);
-
+    
     return res.send({
       message: 'Tokens refreshed',
       role: payload.role,
@@ -163,4 +156,15 @@ export class AuthController {
       `http://localhost:4200/auth/callback?user=${encodeURIComponent(JSON.stringify(user))}`,
     );
   }
+
+
+
+  @Get('getUser')
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@Req() req: any) { 
+    const user = await this.authService.getUser(req.user.sub);
+    return user;
+  }
+
+
 }
