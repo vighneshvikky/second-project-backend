@@ -9,7 +9,7 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { AdminService } from './admin.service';
+import { AdminService } from '../services/admin.service';
 import { Response } from 'express';
 import { GetUsersQueryDto } from 'src/common/helpers/dtos/get-user-query.dto';
 import { BadRequestException } from '@nestjs/common';
@@ -68,15 +68,19 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  @Patch('users/:id/toggle-block')
-  async toggleBlockStatus(
-    @Param('id') id: string,
-    @Query('role') role: 'user' | 'trainer',
-  ) {
-    console.log('id', id);
-    console.log('role', role);
-    return this.adminService.toggleBlockStatus(id, role);
-  }
+ @Patch('users/:id/toggle-block')
+async toggleBlockStatus(
+  @Param('id') id: string,
+  @Query('role') role: 'user' | 'trainer',
+  @Query('page') page: number,
+  @Query('limit') limit: number,
+  @Query('search') search: string,
+) {
+  console.log('role', role)
+  await this.adminService.toggleBlockStatus(id, role);
+  return this.adminService.getUsers({ page, limit, search });
+}
+
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

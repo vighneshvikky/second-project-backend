@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { OtpService } from './otp.service';
 import { MailModule } from 'src/common/helpers/mailer/mailer.module';
 import { RedisModule } from 'src/redis.module';
-import { UserRepository } from 'src/user/user.repository';
+import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserModule } from 'src/user/user.module';
 import { TrainerModule } from 'src/trainer/trainer.module';
 

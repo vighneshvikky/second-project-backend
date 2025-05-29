@@ -3,9 +3,9 @@ import { PasswordUtil } from 'src/common/helpers/password.util';
 import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import Redis from 'ioredis';
 import { Inject } from '@nestjs/common';
-import { UserRepository } from '../user/user.repository';
-import { TrainerRepository } from '../trainer/trainer.repository';
-import { PaginatedResult } from '../common/repositories/base.repository';
+import { UserRepository } from '../../user/repositories/user.repository';
+import { TrainerRepository } from '../../trainer/repositories/trainer.repository';
+import { PaginatedResult } from '../../common/repositories/base.repository';
 import { User } from 'src/user/schemas/user.schema';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
@@ -29,7 +29,7 @@ export class AdminService {
     private readonly trainerRepository: TrainerRepository,
   ) {}
 
-  async verifyAdminLogin(email: string, password: string) {4
+  async verifyAdminLogin(email: string, password: string) {
 
     if (email !== this.adminEmail) {
       throw new UnauthorizedException('Invalid admin credentials');
@@ -90,11 +90,10 @@ export class AdminService {
   }
 
   async toggleBlockStatus(id: string, role: 'user' | 'trainer'): Promise<{ message: string; isBlocked: boolean }> {
-    console.log('role for toglle', role)
+  
     if (role === 'user') {
       const user = await this.userRepository.findById(id);
       if (!user) {
-        console.log('ahi')
         throw new NotFoundException('User not found');
       }
       const updatedUser = await this.userRepository.updateById(id, { isBlocked: !user.isBlocked });
@@ -103,13 +102,14 @@ export class AdminService {
         isBlocked: updatedUser.isBlocked
       };
     } else if (role === 'trainer') {
+
       const trainer = await this.trainerRepository.findById(id);
       if (!trainer) {
         throw new NotFoundException('Trainer not found');
       }
-      const updatedTrainer = await this.trainerRepository.updateById(id, { isBlocked: !trainer.isBlocked });
-      return {
-        message: `Trainer ${updatedTrainer.isBlocked ? 'blocked' : 'unblocked'} successfully`,
+    const updatedTrainer =  await this.trainerRepository.updateById(id, { isBlocked: !trainer.isBlocked });
+        return {
+        message: `User ${updatedTrainer.isBlocked ? 'blocked' : 'unblocked'} successfully`,
         isBlocked: updatedTrainer.isBlocked
       };
     }

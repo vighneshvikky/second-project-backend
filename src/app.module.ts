@@ -9,6 +9,8 @@ import { RedisModule } from './redis.module';
 import { MailModule } from './common/helpers/mailer/mailer.module';
 import { AdminModule } from './admin/admin.module';
 import { UploadModule } from './upload/upload.module';
+import { AwsS3Controller } from './common/aws/controller/aws-s3.controller';
+import { AwsS3Service } from './common/aws/services/aws-s3.service';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { UploadModule } from './upload/upload.module';
     AdminModule,
     UploadModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AwsS3Controller],
+  providers: [AppService, AwsS3Service],
 })
 export class AppModule {}

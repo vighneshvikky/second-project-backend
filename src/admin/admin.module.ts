@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AdminController } from './admin.controller';
-import { AdminService } from './admin.service';
+import { AdminController } from './controllers/admin.controller';
+import { AdminService } from './services/admin.service';
 import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import { RedisModule } from 'src/redis.module';
 import { JwtModule } from '@nestjs/jwt';

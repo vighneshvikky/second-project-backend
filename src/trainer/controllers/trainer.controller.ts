@@ -11,10 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { TrainerService } from './trainer.service';
-import { TrainingRequest } from './trainer.dto';
+import { TrainerService } from '../services/trainer.service';
+import { TrainingRequest } from '../dtos/trainer.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { AwsS3Service } from '../common/services/aws-s3.service';
+import { AwsS3Service } from '../../common/aws/services/aws-s3.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 @Controller('trainers')
 export class TrainerController {

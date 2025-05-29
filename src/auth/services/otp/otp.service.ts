@@ -9,8 +9,8 @@ import { ResendOtpDto } from 'src/auth/dto/resend-otp.dto';
 import { VerifyOtpDto } from 'src/auth/dto/verify-otp.dto';
 import { ApiResponse } from 'src/auth/interfaces/api.response.interface';
 import { MailService } from 'src/common/helpers/mailer/mailer.service';
-import { TrainerRepository } from 'src/trainer/trainer.repository';
-import { UserRepository } from 'src/user/user.repository';
+import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
+import { UserRepository } from 'src/user/repositories/user.repository';
 
 @Injectable()
 export class OtpService {

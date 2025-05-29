@@ -6,14 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { UserService } from 'src/user/user.service';
-import { TrainerService } from 'src/trainer/trainer.service';
+import { UserService } from 'src/user/services/user.service';
+import { TrainerService } from 'src/trainer/services/trainer.service';
 import { PasswordUtil } from 'src/common/helpers/password.util';
 import { JwtTokenService } from './services/jwt/jwt.service';
 import Redis from 'ioredis';
 import { MailService } from 'src/common/helpers/mailer/mailer.service';
-import { UserRepository } from 'src/user/user.repository';
-import { TrainerRepository } from 'src/trainer/trainer.repository';
+import { UserRepository } from 'src/user/repositories/user.repository';
+import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
 import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
 

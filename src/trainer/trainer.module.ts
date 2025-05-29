@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TrainerController } from './trainer.controller';
+import { TrainerController } from './controllers/trainer.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Trainer, TrainerSchema } from './schemas/trainer.schema';
-import { TrainerRepository } from './trainer.repository';
-import { TrainerService } from './trainer.service';
-import { AwsS3Service } from 'src/common/services/aws-s3.service';
+import { TrainerRepository } from './repositories/trainer.repository';
+import { TrainerService } from './services/trainer.service';
+import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
 
 @Module({
   imports: [

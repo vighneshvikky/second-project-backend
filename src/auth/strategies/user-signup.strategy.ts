@@ -1,6 +1,6 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ISignUpStrategy } from '../interfaces/signup.strategy.interface';
-import { UserRepository } from 'src/user/user.repository';
+import { UserRepository } from 'src/user/repositories/user.repository';
 import { CreateAccountDto } from '../dto/createAccount.dto';
 import { PasswordUtil } from '../../common/helpers/password.util';
 import Redis from 'ioredis';

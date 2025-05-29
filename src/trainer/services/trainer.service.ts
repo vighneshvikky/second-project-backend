@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { TrainerRepository } from './trainer.repository';
-import { Trainer } from './schemas/trainer.schema';
+import { TrainerRepository } from '../repositories/trainer.repository';
+import { Trainer } from '../schemas/trainer.schema';
 import { PasswordUtil } from 'src/common/helpers/password.util';
-import { TrainingRequest } from './trainer.dto';
-import { AwsS3Service } from 'src/common/services/aws-s3.service';
+import { TrainingRequest } from '../dtos/trainer.dto';
+import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
 
 @Injectable()
 export class TrainerService {
@@ -62,13 +62,13 @@ export class TrainerService {
     let idProofUrl = trainer.idProofUrl;
     let certificationUrl = trainer.certificationUrl;
 
-    if (files.idProof && files.idProof[0]) {
-      idProofUrl = await this.awsS3Service.uploadFile(files.idProof[0], 'id-proofs');
-    }
+    // if (files.idProof && files.idProof[0]) {
+    //   idProofUrl = await this.awsS3Service.uploadFile(files.idProof[0], 'id-proofs');
+    // }
 
-    if (files.certification && files.certification[0]) {
-      certificationUrl = await this.awsS3Service.uploadFile(files.certification[0], 'certifications');
-    }
+    // if (files.certification && files.certification[0]) {
+    //   certificationUrl = await this.awsS3Service.uploadFile(files.certification[0], 'certifications');
+    // }
 
    const updatedTrainer = await this.trainerRepo.updateById(trainerId, {
     name: dto.name,
