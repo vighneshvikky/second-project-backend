@@ -5,6 +5,7 @@ import { Trainer, TrainerSchema } from './schemas/trainer.schema';
 import { TrainerRepository } from './repositories/trainer.repository';
 import { TrainerService } from './services/trainer.service';
 import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
+import { ITrainerRepository } from './interfaces/trainer-repository.interface';
 
 @Module({
   imports: [
@@ -15,8 +16,16 @@ import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
       },
     ]),
   ],
-  providers: [TrainerRepository, TrainerService, AwsS3Service],
   controllers: [TrainerController],
-  exports: [TrainerRepository, TrainerService]
+  providers: [
+    TrainerRepository,
+    {
+      provide: ITrainerRepository,
+      useClass: TrainerRepository,
+    },
+    TrainerService,
+    AwsS3Service,
+  ],
+  exports: [ITrainerRepository, TrainerRepository, TrainerService],
 })
 export class TrainerModule {}

@@ -1,19 +1,8 @@
 import { Model, Document } from 'mongoose';
+import { IBaseRepository, PaginatedResult, PaginationOptions } from '../interface/base-repository.interface';
 
-export interface PaginationOptions {
-  page: number;
-  limit: number;
-}
 
-export interface PaginatedResult<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export abstract class BaseRepository<T extends Document> {
+export abstract class BaseRepository<T extends Document> implements IBaseRepository<T>{
   protected constructor(protected readonly model: Model<T>) {}
   async create(data: Partial<T>): Promise<T> {
     const created = new this.model(data);

@@ -5,9 +5,9 @@ import Redis from 'ioredis';
 import { Inject } from '@nestjs/common';
 import { UserRepository } from '../../user/repositories/user.repository';
 import { TrainerRepository } from '../../trainer/repositories/trainer.repository';
-import { PaginatedResult } from '../../common/repositories/base.repository';
 import { User } from 'src/user/schemas/user.schema';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
+import { PaginatedResult } from 'src/common/interface/base-repository.interface';
 
 
 interface GetUsersOptions {

@@ -1,13 +1,23 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TrainerRepository } from '../repositories/trainer.repository';
 import { Trainer } from '../schemas/trainer.schema';
 import { PasswordUtil } from 'src/common/helpers/password.util';
 import { TrainingRequest } from '../dtos/trainer.dto';
 import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
+import { ITrainerRepository } from '../interfaces/trainer-repository.interface';
 
 @Injectable()
 export class TrainerService {
-  constructor(readonly trainerRepo: TrainerRepository, readonly awsS3Service: AwsS3Service) {}
+  constructor(
+    @Inject(ITrainerRepository)
+    private readonly trainerRepo: ITrainerRepository,
+    readonly awsS3Service: AwsS3Service,
+  ) {}
 
   async findByEmail(email: string): Promise<Trainer | null> {
     return this.trainerRepo.findByEmail(email);
@@ -23,7 +33,6 @@ export class TrainerService {
     }
     return this.trainerRepo.create(payload);
   }
-
 
   async createTrainingRequest(dto: TrainingRequest): Promise<Trainer> {
     return this.trainerRepo.create(dto);
@@ -62,29 +71,19 @@ export class TrainerService {
     let idProofUrl = trainer.idProofUrl;
     let certificationUrl = trainer.certificationUrl;
 
-    // if (files.idProof && files.idProof[0]) {
-    //   idProofUrl = await this.awsS3Service.uploadFile(files.idProof[0], 'id-proofs');
-    // }
+    const updatedTrainer = await this.trainerRepo.updateById(trainerId, {
+      name: dto.name,
+      email: dto.email,
+      phoneNumber: dto.phoneNumber,
+      specialization: dto.specialization,
+      experience: dto.experience,
+      bio: dto.bio || '',
+      idProofUrl,
+      certificationUrl,
+      isVerified: false,
+      verificationStatus: 'pending',
+    });
 
-    // if (files.certification && files.certification[0]) {
-    //   certificationUrl = await this.awsS3Service.uploadFile(files.certification[0], 'certifications');
-    // }
-
-   const updatedTrainer = await this.trainerRepo.updateById(trainerId, {
-    name: dto.name,
-    email: dto.email,
-    phoneNumber: dto.phoneNumber,
-    specialization: dto.specialization,
-    experience: dto.experience,
-    bio: dto.bio || '',
-    idProofUrl,
-    certificationUrl,
-    isVerified: false,
-    verificationStatus: 'pending',
-  });
-
-  return updatedTrainer;
+    return updatedTrainer;
   }
-
-
 }
