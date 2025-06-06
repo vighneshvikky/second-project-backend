@@ -1,48 +1,54 @@
-import { IsOptional, IsString, IsArray, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsArray, IsDateString, IsNumber } from 'class-validator';
 
 export class UpdateUserDto {
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @IsString()
-  email: string;
+  email?: string;
 
-  // Expecting an ISO date string (e.g., "2006-03-06T00:00:00.000Z")
+  @IsOptional()
   @IsDateString()
-  dob: string;
+  dob?: string;
 
-  // If height is really a date string, use IsDateString() - otherwise, change to a number or a string validator.
-  @IsDateString()
-  height: string;
+  @IsOptional()
+  @IsNumber()
+  height?: number;
 
+  @IsOptional()
   @IsString()
-  heightUnit: string;
+  heightUnit?: string;
 
-  // Same note as for height; change to number if needed
-  @IsDateString()
-  weight: string;
+  @IsOptional()
+  @IsNumber()
+  weight?: number;
 
+  @IsOptional()
   @IsString()
-  weightUnit: string;
+  weightUnit?: string;
 
+  @IsOptional()
   @IsString()
-  fitnessLevel: string;
+  fitnessLevel?: string;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  fitnessGoals: string[];
+  fitnessGoals?: string[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  trainingTypes: string[];
+  trainingTypes?: string[];
 
+  @IsOptional()
   @IsString()
-  workoutsPerWeek: string;
+  preferredTime?: string;
 
-  @IsString()
-  preferredTime: string;
-
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  equipments: string[];
+  equipments?: string[];
 }

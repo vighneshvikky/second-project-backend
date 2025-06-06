@@ -34,13 +34,13 @@ export class User extends Document {
   dob: string;
 
   @Prop()
-  height: string;
+  height: number;
 
   @Prop()
   heightUnit: string;
 
   @Prop()
-  weight: string;
+  weight: number;
 
   @Prop()
   weightUnit: string;
@@ -54,8 +54,6 @@ export class User extends Document {
   @Prop({ type: [String], default: [] })
   trainingTypes: string[];
 
-  @Prop({ default: '3-4' })
-  workoutsPerWeek: string;
 
   @Prop({ default: 'flexible' })
   preferredTime: string;

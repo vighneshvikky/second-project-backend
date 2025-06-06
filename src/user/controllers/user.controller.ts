@@ -14,7 +14,7 @@ export class UserController {
   @Patch('update-profile')
   async updateUser(
     @GetUser('sub') userId: string,
-    @Body() updateData: UpdateUserDto,
+    @Body() updateData: UpdateUserDto ,
   ) {
     return await this.userService.findByIdAndUpdate(userId, updateData);
   }
