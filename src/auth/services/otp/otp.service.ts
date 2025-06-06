@@ -9,7 +9,9 @@ import { ResendOtpDto } from 'src/auth/dto/resend-otp.dto';
 import { VerifyOtpDto } from 'src/auth/dto/verify-otp.dto';
 import { ApiResponse } from 'src/auth/interfaces/api.response.interface';
 import { MailService } from 'src/common/helpers/mailer/mailer.service';
+import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
+import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 import { UserRepository } from 'src/user/repositories/user.repository';
 
 @Injectable()
@@ -17,8 +19,8 @@ export class OtpService {
   constructor(
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     private readonly mailService: MailService,
-    private readonly userRepo: UserRepository,
-    private readonly trainerRepo: TrainerRepository,
+    @Inject(IUserRepository) private readonly userRepo: IUserRepository,
+    @Inject(ITrainerRepository) private readonly trainerRepo: ITrainerRepository
   ) {}
 
   async generateOtp(email: string): Promise<string> {

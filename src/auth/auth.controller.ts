@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Query,
   Req,
@@ -21,10 +22,10 @@ import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { JwtTokenService } from './services/jwt/jwt.service';
-import { GoogleLoginDto } from './dto/google-login.dto';
 import { setTokenCookies } from 'src/common/helpers/token.setter';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
+import { SignupDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,13 +33,12 @@ export class AuthController {
     readonly signupStratergyResolver: SignUpStrategyResolver,
     private readonly otpService: OtpService,
     private readonly authService: AuthService,
-    private readonly jwtService: JwtTokenService,
+    @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService
   ) {
     console.log('✅ AuthController loaded');
   }
   @Post('signup')
-  async signUp(@Body() body: any) {
-    console.log('body', body);
+  async signUp(@Body() body: SignupDto) {
     const stratergy = this.signupStratergyResolver.resolve(body.role);
 
     const otpSuccess = await stratergy.signUp(body);
@@ -158,10 +158,10 @@ export class AuthController {
   }
 
 
-
   @Get('getUser')
   @UseGuards(JwtAuthGuard)
   async getCurrentUser(@Req() req: any) { 
+    
     const user = await this.authService.getUser(req.user.sub);
     return user;
   }

@@ -7,7 +7,7 @@ import {
 import { TrainerRepository } from '../repositories/trainer.repository';
 import { Trainer } from '../schemas/trainer.schema';
 import { PasswordUtil } from 'src/common/helpers/password.util';
-import { TrainingRequest } from '../dtos/trainer.dto';
+import {  UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
 import { ITrainerRepository } from '../interfaces/trainer-repository.interface';
 
@@ -34,9 +34,7 @@ export class TrainerService {
     return this.trainerRepo.create(payload);
   }
 
-  async createTrainingRequest(dto: TrainingRequest): Promise<Trainer> {
-    return this.trainerRepo.create(dto);
-  }
+
 
   async createTrainerWithFiles(data: {
     name: string;
@@ -55,21 +53,13 @@ export class TrainerService {
     return this.trainerRepo.findById(id);
   }
 
-  async updateTrainerProfile(
-    trainerId: string,
-    dto: TrainingRequest,
-    files: {
-      idProof?: Express.Multer.File[];
-      certification?: Express.Multer.File[];
-    },
-  ) {
+  async updateTrainerProfile(trainerId: string, dto: any) {
     const trainer = await this.trainerRepo.findById(trainerId);
     if (!trainer) {
       throw new NotFoundException('Trainer not found');
     }
 
-    let idProofUrl = trainer.idProofUrl;
-    let certificationUrl = trainer.certificationUrl;
+ 
 
     const updatedTrainer = await this.trainerRepo.updateById(trainerId, {
       name: dto.name,
@@ -78,10 +68,10 @@ export class TrainerService {
       specialization: dto.specialization,
       experience: dto.experience,
       bio: dto.bio || '',
-      idProofUrl,
-      certificationUrl,
+      idProofUrl: dto.idProof,
+      certificationUrl: dto.certification,
       isVerified: false,
-      verificationStatus: 'pending',
+      verificationStatus: 'requested',
     });
 
     return updatedTrainer;

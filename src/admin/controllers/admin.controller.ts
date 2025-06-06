@@ -8,6 +8,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { AdminService } from '../services/admin.service';
 import { Response } from 'express';
@@ -18,6 +19,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
 import { setTokenCookies } from 'src/common/helpers/token.setter';
 import { LoginAdminDto } from 'src/auth/dto/admin.dto';
+import { IAdminService } from '../interfaces/IAdminService';
 
 class AdminLoginDto {
   email: string;
@@ -33,7 +35,7 @@ interface GetUsersQuery {
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(@Inject(IAdminService) private readonly adminService: IAdminService) {}
 
   @Post('login')
   async login(
@@ -45,13 +47,11 @@ export class AdminController {
         loginDto.email,
         loginDto.password,
       );
-    console.log('acces', accessToken);
-    console.log('refresh', refreshToken);
+
     setTokenCookies(response, accessToken, refreshToken);
     return {
       message: 'Admin login successful',
       data: {
-        id: 'f123456',
         email: loginDto.email,
         role: 'admin',
       },
@@ -62,25 +62,22 @@ export class AdminController {
   @Roles('admin')
   @Get('users')
   async getUsers(@Query() query: GetUsersQueryDto) {
-    
     return this.adminService.getUsers(query);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
- @Patch('users/:id/toggle-block')
-async toggleBlockStatus(
-  @Param('id') id: string,
-  @Query('role') role: 'user' | 'trainer',
-  @Query('page') page: number,
-  @Query('limit') limit: number,
-  @Query('search') search: string,
-) {
-  console.log('role', role)
-  await this.adminService.toggleBlockStatus(id, role);
-  return this.adminService.getUsers({ page, limit, search });
-}
-
+  @Patch('users/:id/toggle-block')
+  async toggleBlockStatus(
+    @Param('id') id: string,
+    @Query('role') role: 'user' | 'trainer',
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('search') search: string,
+  ) {
+    await this.adminService.toggleBlockStatus(id, role);
+    return this.adminService.getUsers({ page, limit, search });
+  }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

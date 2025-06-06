@@ -12,33 +12,22 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { TrainerService } from '../services/trainer.service';
-import { TrainingRequest } from '../dtos/trainer.dto';
+import {  UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AwsS3Service } from '../../common/aws/services/aws-s3.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 @Controller('trainers')
 export class TrainerController {
   constructor(
-    private readonly awsS3Service: AwsS3Service,
     private readonly trainerService: TrainerService,
   ) {}
 
   @Patch('profile/:id')
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'idProof', maxCount: 1 },
-      { name: 'certification', maxCount: 1 },
-    ]),
-  )
   async updateTrainerProfile(
     @Param('id') trainerId: string,
     @Body() dto: any,
-    @UploadedFiles()
-    files: {
-      idProof?: Express.Multer.File[];
-      certification?: Express.Multer.File[];
-    },
   ) {
-    return this.trainerService.updateTrainerProfile(trainerId, dto, files);
+    console.log('data form trainer profile', dto)
+    return this.trainerService.updateTrainerProfile(trainerId, dto);
   }
 }

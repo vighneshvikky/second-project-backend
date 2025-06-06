@@ -16,17 +16,20 @@ import { UserRepository } from 'src/user/repositories/user.repository';
 import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
 import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
+import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
+import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
+import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private trainerService: TrainerService,
-    private jwtService: JwtTokenService,
+    @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
     private mailService: MailService,
-    private userRepo: UserRepository,
-    private trainerRepo: TrainerRepository,
-
+    @Inject(IUserRepository) private readonly userRepo: IUserRepository,
+    @Inject(ITrainerRepository)
+    private readonly trainerRepo: ITrainerRepository,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
 
@@ -200,6 +203,7 @@ export class AuthService {
     code: string,
     role: string,
   ): Promise<{ accessToken: string; refreshToken: string; user: any }> {
+    
     const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
@@ -276,7 +280,7 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
-  async getUser(id: string){
-return this.trainerRepo.findById(id)
+  async getUser(id: string) {
+    return this.trainerRepo.findById(id);
   }
 }

@@ -8,6 +8,9 @@ import { TrainerRepository } from '../../trainer/repositories/trainer.repository
 import { User } from 'src/user/schemas/user.schema';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { PaginatedResult } from 'src/common/interface/base-repository.interface';
+import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
+import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
+import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 
 
 interface GetUsersOptions {
@@ -23,10 +26,10 @@ export class AdminService {
   private readonly adminPassword = process.env.ADMIN_PASSWORD!;
 
   constructor(
-    private jwtService: JwtTokenService,
+    @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
-    private readonly userRepository: UserRepository,
-    private readonly trainerRepository: TrainerRepository,
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
+    @Inject(ITrainerRepository) private readonly trainerRepository: ITrainerRepository
   ) {}
 
   async verifyAdminLogin(email: string, password: string) {
@@ -138,6 +141,15 @@ export class AdminService {
       rejectedAt: new Date(),
     });
   }
+
+
+
+  
+private getRepoByRole(role: 'user' | 'trainer'): IUserRepository | ITrainerRepository {
+  if (role === 'user') return this.userRepository;
+  if (role === 'trainer') return this.trainerRepository;
+  throw new NotFoundException('Invalid role specified');
+}
   
   
   

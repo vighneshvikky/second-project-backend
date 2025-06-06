@@ -26,6 +26,6 @@ import { ITrainerRepository } from './interfaces/trainer-repository.interface';
     TrainerService,
     AwsS3Service,
   ],
-  exports: [ITrainerRepository, TrainerRepository, TrainerService],
+  exports: [{provide: ITrainerRepository, useClass: TrainerRepository}, TrainerService],
 })
 export class TrainerModule {}

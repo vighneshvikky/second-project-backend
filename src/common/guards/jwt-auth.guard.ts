@@ -3,17 +3,18 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
+import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtTokenService,
+    @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -22,7 +23,7 @@ export class JwtAuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException('Access token not found');
     }
-
+  console.log('➡️ Token in cookie:', token); 
     try {
       const secret = this.configService.get<string>('ACCESS_TOKEN_SECRET');
 
@@ -30,9 +31,13 @@ export class JwtAuthGuard implements CanActivate {
 
       const payload = this.jwtService.verifyToken(token);
 
+          console.log('✅ Decoded JWT payload:', payload); // STEP 2
+
+
       request['user'] = payload;
       return true;
     } catch (err) {
+       console.error('❌ JWT verification failed:', err); 
       if (err instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedException('Access token expired');
       }

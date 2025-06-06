@@ -24,8 +24,8 @@ export class Trainer extends Document {
   @Prop({ default: false })
   isVerified: boolean;
 
-  @Prop({ enum: ['pending', 'approved', 'rejected'], default: 'pending' })
-  verificationStatus: 'pending' | 'approved' | 'rejected';
+  @Prop({ enum: ['pending', 'approved', 'rejected', 'requested'], default: 'pending' })
+  verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
 
   @Prop()
   phoneNumber: string;

@@ -7,11 +7,11 @@ import { UserSignUpStrategy } from './strategies/user-signup.strategy';
 import { TrainerModule } from 'src/trainer/trainer.module';
 import { RedisModule } from 'src/redis.module';
 import { OtpModule } from './services/otp/otp.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthService } from './auth.service';
 import { JwtTokenService } from './services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/common/helpers/mailer/mailer.module';
+import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
 
 
 @Module({
@@ -32,8 +32,12 @@ import { MailModule } from 'src/common/helpers/mailer/mailer.module';
     TrainerSignUpStrategy,
     UserSignUpStrategy,
     AuthService,
-    JwtTokenService,
+    {
+      provide: IJwtTokenService,
+      useClass: JwtTokenService
+    }
   
   ],
+  exports: [IJwtTokenService]
 })
 export class AuthModule {}

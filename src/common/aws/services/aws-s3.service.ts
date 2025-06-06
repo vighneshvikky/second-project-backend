@@ -18,8 +18,8 @@ export class AwsS3Service {
     folder: string,
     fileName: string,
     contentType: string,
-  ): Promise<{ url: string; key: string }> {
-    const key = `${folder}/${uuid}-${fileName}`;
+  ) {
+    const key = `${folder}/${uuid()}-${fileName}`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME!,
@@ -27,8 +27,8 @@ export class AwsS3Service {
       ContentType: contentType,
     });
 
-    const url = await getSignedUrl(this.s3, command, {expiresIn: 300});
+    const url = await getSignedUrl(this.s3, command, { expiresIn: 300 }); // expires in 5 minutes
 
-    return {url, key};
+    return { url, key }; // key gets saved to MongoDB
   }
 }

@@ -5,11 +5,12 @@ import { CreateAccountDto } from '../dto/createAccount.dto';
 import { PasswordUtil } from '../../common/helpers/password.util';
 import Redis from 'ioredis';
 import { OtpService } from '../services/otp/otp.service';
+import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 
 @Injectable()
 export class UserSignUpStrategy implements ISignUpStrategy {
   constructor(
-    private readonly userRepo: UserRepository,
+    @Inject(IUserRepository) private readonly userRepo: IUserRepository,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     private readonly otpService: OtpService,
   ) {}

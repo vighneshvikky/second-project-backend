@@ -1,41 +1,39 @@
-import { IsEmail, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, MaxLength, Min } from "class-validator";
+import { IsEmail, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, Matches, MaxLength, Min } from "class-validator";
 
-export class TrainingRequest {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
 
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
 
-  @IsPhoneNumber()
-  @IsNotEmpty()
-  phoneNumber: string;
 
-  @IsString()
-  @IsNotEmpty()
-  specialization: string;
 
-  @IsNumber()
-  @Min(0)
-  experience: number;
-
-  @IsString()
+export class UpdateTrainerProfileDto {
   @IsOptional()
-  @MaxLength(1000)
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @Matches(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits' })
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
   bio?: string;
 
+  @IsNumber()
+  experience: number;
 
   @IsOptional()
-@IsString()
-idProof?: string;
+  @IsString()
+  specialization?: string;
 
-@IsOptional()
-@IsString()
-certification?: string;
+  @IsOptional()
+  @IsString()
+  certification?: string; 
 
+  @IsOptional()
+  @IsString()
+  idProof?: string; 
 }
-
-
 

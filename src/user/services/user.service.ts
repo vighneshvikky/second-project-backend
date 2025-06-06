@@ -1,5 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { UserRepository } from '../repositories/user.repository';
+import {  Inject, Injectable } from '@nestjs/common';
 import { User } from '../schemas/user.schema';
 import { IUserRepository } from '../interfaces/user-repository.interface';
 
@@ -16,5 +15,9 @@ export class UserService {
 
   async updatePassword(userId: string, newPassword: string): Promise<void> {
     await this.userRepo.updatePassword(userId, newPassword);
+  }
+
+  async findByIdAndUpdate(userId: string, data: Partial<User>){
+await this.userRepo.updateById(userId, data)
   }
 }
