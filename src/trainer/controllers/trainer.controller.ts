@@ -1,33 +1,27 @@
 import {
   Controller,
-  Post,
-  Param,
-  Req,
-  UploadedFiles,
   Body,
-  BadRequestException,
-  UseInterceptors,
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { TrainerService } from '../services/trainer.service';
-import {  UpdateTrainerProfileDto } from '../dtos/trainer.dto';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { AwsS3Service } from '../../common/aws/services/aws-s3.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { Roles } from 'src/common/decorator/role.decorator';
+import { GetUser } from 'src/common/decorator/get-user.decorator';
 @Controller('trainers')
 export class TrainerController {
-  constructor(
-    private readonly trainerService: TrainerService,
-  ) {}
+  constructor(private readonly trainerService: TrainerService) {}
 
-  @Patch('profile/:id')
+  @Patch('update-trainer-profile')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('trainer')
   async updateTrainerProfile(
-    @Param('id') trainerId: string,
+    @GetUser('sub') trainerId: string,
     @Body() dto: any,
   ) {
-    console.log('data form trainer profile', dto)
+    console.log('trainer id from regiteration', trainerId);
+    console.log('data form trainer profile', dto);
     return this.trainerService.updateTrainerProfile(trainerId, dto);
   }
 }

@@ -61,18 +61,7 @@ export class TrainerService {
 
  
 
-    const updatedTrainer = await this.trainerRepo.updateById(trainerId, {
-      name: dto.name,
-      email: dto.email,
-      phoneNumber: dto.phoneNumber,
-      specialization: dto.specialization,
-      experience: dto.experience,
-      bio: dto.bio || '',
-      idProofUrl: dto.idProof,
-      certificationUrl: dto.certification,
-      isVerified: false,
-      verificationStatus: 'requested',
-    });
+    const updatedTrainer = await this.trainerRepo.updateById(trainerId, dto);
 
     return updatedTrainer;
   }
