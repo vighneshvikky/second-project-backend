@@ -24,7 +24,10 @@ export class Trainer extends Document {
   @Prop({ default: false })
   isVerified: boolean;
 
-  @Prop({ enum: ['pending', 'approved', 'rejected', 'requested'], default: 'pending' })
+  @Prop({
+    enum: ['pending', 'approved', 'rejected', 'requested'],
+    default: 'pending',
+  })
   verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
 
   @Prop()
@@ -33,8 +36,11 @@ export class Trainer extends Document {
   @Prop()
   verifiedAt?: Date;
 
-  @Prop()
-  specialization: string;
+  @Prop({ enum: ['Cardio', 'Strength', 'Yoga', 'Nutrition'] })
+  category?: string;
+
+  @Prop({ type: [String] })
+  specialization?: string[];
 
   @Prop()
   experience: number;

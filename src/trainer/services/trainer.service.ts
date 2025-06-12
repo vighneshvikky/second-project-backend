@@ -40,7 +40,7 @@ export class TrainerService {
     name: string;
     email: string;
     phoneNumber: string;
-    specialization: string;
+    specialization: string[];
     experience: number;
     bio: string;
     idProofUrl: string;
@@ -65,4 +65,6 @@ export class TrainerService {
 
     return updatedTrainer;
   }
+
+
 }

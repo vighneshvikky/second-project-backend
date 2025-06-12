@@ -8,7 +8,7 @@ export interface ITrainerRepository extends IBaseRepository<Trainer>{
     name: string;
     email: string;
     phoneNumber: string;
-    specialization: string;
+    specialization: string[];
     experience: number;
     bio: string;
     idProofUrl: string;
@@ -23,7 +23,7 @@ export interface ITrainerRepository extends IBaseRepository<Trainer>{
       name: string;
       email: string;
       phoneNumber: string;
-      specialization: string;
+      specialization: string[];
       experience: number;
       bio: string;
       idProofUrl: string;

@@ -4,6 +4,9 @@ import { IBaseRepository, PaginatedResult, PaginationOptions } from '../interfac
 
 export abstract class BaseRepository<T extends Document> implements IBaseRepository<T>{
   protected constructor(protected readonly model: Model<T>) {}
+  find(data: Partial<T>) {
+    throw new Error('Method not implemented.');
+  }
   async create(data: Partial<T>): Promise<T> {
     const created = new this.model(data);
     return created.save();
@@ -13,8 +16,8 @@ export abstract class BaseRepository<T extends Document> implements IBaseReposit
     return this.model.findById(id).exec();
   }
 
-  async findAll(): Promise<T[]> {
-    return this.model.find().exec();
+  async findAll(filter?: Record<string, any>): Promise<T[]> {
+    return this.model.find(filter || {}).exec();
   }
 
   async findOne(filter: Record<string, any>): Promise<T | null> {

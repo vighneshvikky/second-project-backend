@@ -22,7 +22,7 @@ export class User extends Document {
   isBlocked: boolean;
 
   @Prop({ default: false })
-  isVerified: false;
+  isVerified: boolean;
 
   @Prop()
   googleId?: string;
@@ -53,7 +53,6 @@ export class User extends Document {
 
   @Prop({ type: [String], default: [] })
   trainingTypes: string[];
-
 
   @Prop({ default: 'flexible' })
   preferredTime: string;

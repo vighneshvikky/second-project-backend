@@ -1,10 +1,11 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { UpdateUserDto } from '../dtos/user.dto';
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
 import { RolesGuard } from 'src/common/guards/role.guard';
+import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
 @Controller('user')
 export class UserController {
@@ -14,8 +15,20 @@ export class UserController {
   @Patch('update-profile')
   async updateUser(
     @GetUser('sub') userId: string,
-    @Body() updateData: UpdateUserDto ,
+    @Body() updateData: UpdateUserDto,
   ) {
     return await this.userService.findByIdAndUpdate(userId, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('user')
+  @Get('approved-trainer')
+  async getApprovedTrainer(
+    @Query('category') category?: string,
+    @Query('name') name?: string,
+  ): Promise<Trainer[]> {
+    console.log('category', category);
+    console.log('name', name)
+    return await this.userService.findApprovedTrainer({category, name});
   }
 }

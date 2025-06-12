@@ -1,13 +1,17 @@
-import {  Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from '../schemas/user.schema';
 import { IUserRepository } from '../interfaces/user-repository.interface';
 import { UpdateUserDto } from '../dtos/user.dto';
+import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
+import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(IUserRepository)
     private readonly userRepo: IUserRepository,
+    @Inject(ITrainerRepository)
+    private readonly trainerRepo: ITrainerRepository,
   ) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -18,8 +22,35 @@ export class UserService {
     await this.userRepo.updatePassword(userId, newPassword);
   }
 
-async findByIdAndUpdate(userId: string, data: Partial<UpdateUserDto>): Promise<User> {
-  return await this.userRepo.updateById(userId, data);
-}
+  async findByIdAndUpdate(
+    userId: string,
+    data: Partial<UpdateUserDto>,
+  ): Promise<User> {
+    return await this.userRepo.updateById(userId, {
+      ...data,
+      isVerified: true,
+    });
+  }
 
+  async findApprovedTrainer(filters: {
+    category?: string;
+    name?: string;
+  }): Promise<Trainer[]> {
+    const query: any = {
+      role: 'trainer',
+      verificationStatus: 'approved',
+      isBlocked: false,
+    };
+
+    if (filters.category) {
+      query.category = filters.category;
+    }
+
+    if (filters.name) {
+      query.name = { $regex: filters.name, $options: 'i' };
+    }
+   
+     return await this.trainerRepo.findAll(query);
+
+  }
 }

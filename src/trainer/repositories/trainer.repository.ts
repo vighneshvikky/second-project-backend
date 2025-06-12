@@ -19,7 +19,7 @@ export class TrainerRepository extends BaseRepository<Trainer> implements ITrain
     name: string;
     email: string;
     phoneNumber: string;
-    specialization: string;
+    specialization: string[];
     experience: number;
     bio: string;
     idProofUrl: string;
@@ -41,7 +41,7 @@ export class TrainerRepository extends BaseRepository<Trainer> implements ITrain
       name: string;
       email: string;
       phoneNumber: string;
-      specialization: string;
+      specialization: string[];
       experience: number;
       bio: string;
       idProofUrl: string;
