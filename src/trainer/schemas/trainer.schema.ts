@@ -65,6 +65,21 @@ export class Trainer extends Document {
 
   @Prop()
   image: string;
+    @Prop({
+    type: {
+      oneToOneSession: { type: Number, required: true, default: 0 },
+      workoutPlan: { type: Number, required: true, default: 0 },
+    },
+    required: true,
+    default: {
+      oneToOneSession: 0,
+      workoutPlan: 0,
+    },
+  })
+  pricing: {
+    oneToOneSession: number;
+    workoutPlan: number;
+  };
 }
 
 export const TrainerSchema = SchemaFactory.createForClass(Trainer);
