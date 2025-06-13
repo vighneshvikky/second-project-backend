@@ -20,8 +20,7 @@ export class TrainerController {
     @GetUser('sub') trainerId: string,
     @Body() dto: any,
   ) {
-    console.log('trainer id from regiteration', trainerId);
-    console.log('data form trainer profile', dto);
+     console.log('trainer data', dto)
     return this.trainerService.updateTrainerProfile(trainerId, dto);
   }
 }
