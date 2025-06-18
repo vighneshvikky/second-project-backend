@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   Inject,
   Post,
   Query,
@@ -12,7 +10,6 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { CreateAccountDto } from './dto/createAccount.dto';
 import { SignUpStrategyResolver } from './strategies/signup-strategy.resolver';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
@@ -47,13 +44,13 @@ export class AuthController {
   }
   @Post('verify-otp')
   async verifyOtp(@Body() body: VerifyOtpDto) {
-    console.log('body', body);
+
     return await this.otpService.verifyOtp(body);
   }
 
   @Post('resend-otp')
   async resendOtp(@Body() body: ResendOtpDto) {
-    console.log('body', body);
+   
     return await this.otpService.resendOtp(body);
   }
 

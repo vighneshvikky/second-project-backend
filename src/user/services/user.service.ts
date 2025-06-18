@@ -18,6 +18,10 @@ export class UserService {
     return this.userRepo.findByEmail(email);
   }
 
+
+
+
+
   async updatePassword(userId: string, newPassword: string): Promise<void> {
     await this.userRepo.updatePassword(userId, newPassword);
   }
@@ -30,6 +34,12 @@ export class UserService {
       ...data,
       isVerified: true,
     });
+  }
+
+  async findTrainer(
+    id: string
+  ): Promise<Trainer | null>{
+    return await this.trainerRepo.findById(id)
   }
 
   async findApprovedTrainer(filters: {

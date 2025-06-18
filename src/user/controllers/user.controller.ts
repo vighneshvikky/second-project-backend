@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { UpdateUserDto } from '../dtos/user.dto';
 import { UserService } from '../services/user.service';
@@ -28,7 +36,14 @@ export class UserController {
     @Query('name') name?: string,
   ): Promise<Trainer[]> {
     console.log('category', category);
-    console.log('name', name)
-    return await this.userService.findApprovedTrainer({category, name});
+
+    return await this.userService.findApprovedTrainer({ category, name });
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('user')
+  @Get('getTrainerData/:id')
+  getTrainerData(@Param('id') id: string): Promise<Trainer | null> {
+    return this.userService.findTrainer(id);
   }
 }
