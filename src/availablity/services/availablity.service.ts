@@ -13,10 +13,12 @@ export class AvailabilityService {
   ) {}
 
   createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto) {
+
+    const {date, slots} = dto
     return this.availabilityRepo.upsertAvailability(
       trainerId,
-      dto.date,
-      dto.slots,
+      date,
+      slots,
     );
   }
 
@@ -25,6 +27,7 @@ export class AvailabilityService {
   }
 
   getTrainerAvailabilityBasedonDate(traineId: string, date: string) {
+  
     return this.availabilityRepo.findByTrainerAndDate(traineId, date)
   }
 }

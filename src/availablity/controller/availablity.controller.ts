@@ -23,23 +23,27 @@ export class AvailabilityController {
   @Roles('trainer')
   setAvailability(
     @GetUser('sub') trainerId: string,
-    @Body() dto: CreateAvailabilityDto,
+    @Body() dto: any,
   ) {
+    console.log('dto', dto)
     return this.availabilityService.createOrUpdateAvailability(trainerId, dto);
   }
 
-  @Get('get-availability-trainer')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('trainer')
-  getTrainerAvailabilityForTrainer(
-    @GetUser('sub') trainerId: string,
-    date: string,
-  ) {
-    return this.availabilityService.getTrainerAvailabilityBasedonDate(
-      trainerId,
-      date,
-    );
-  }
+
+
+@Get('get-availability-trainer')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('trainer')
+getTrainerAvailabilityForTrainer(
+  @GetUser('sub') trainerId: string,
+  @Query('date') date: string,
+) {
+  return this.availabilityService.getTrainerAvailabilityBasedonDate(
+    trainerId,
+    date,
+  );
+}
+
 
   @Get('get-availability-user')
   getTrainerAvailabilityForUser(@Query('trainerId') trainerId: string) {

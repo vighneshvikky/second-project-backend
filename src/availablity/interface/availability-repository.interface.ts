@@ -15,7 +15,7 @@ export interface IAvailabilityRepository {
   upsertAvailability(
     trainerId: string,
     date: string,
-    slots: string[],
+    slots: { start: string; end: string }[],
   ): Promise<Availability>;
   getAllForTrainer(trainerId: string): Promise<Availability[]>;
 }
