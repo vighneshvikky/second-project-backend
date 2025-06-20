@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import {
   AVAILABILITY_REPOSITORY,
   IAvailabilityRepository,
@@ -12,15 +12,30 @@ export class AvailabilityService {
     private readonly availabilityRepo: IAvailabilityRepository,
   ) {}
 
-  createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto) {
+async createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto) {
+  const { date, slots } = dto;
 
-    const {date, slots} = dto
-    return this.availabilityRepo.upsertAvailability(
-      trainerId,
-      date,
-      slots,
-    );
+  const existing = await this.availabilityRepo.findByTrainerAndDate(trainerId, date);
+
+  function hasConflict(a: { start: string; end: string }, b: { start: string; end: string }) {
+    return a.start < b.end && b.start < a.end;
   }
+
+  if (existing) {
+    for (const newSlot of slots) {
+      for (const existingSlot of existing.slots) {
+        if (hasConflict(newSlot, existingSlot)) {
+          throw new BadRequestException(
+            `Slot ${newSlot.start}-${newSlot.end} conflicts with existing slot ${existingSlot.start}-${existingSlot.end}`
+          );
+        }
+      }
+    }
+  }
+
+  return this.availabilityRepo.upsertAvailability(trainerId, date, slots);
+}
+
 
   getTrainerAvailability(trainerId: string) {
     return this.availabilityRepo.getAllForTrainer(trainerId);

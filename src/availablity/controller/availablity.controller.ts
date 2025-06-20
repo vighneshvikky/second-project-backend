@@ -18,16 +18,29 @@ import { GetUser } from 'src/common/decorator/get-user.decorator';
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}
 
+  // @Post('set-availability')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('trainer')
+  // setAvailability(
+  //   @GetUser('sub') trainerId: string,
+  //   @Body() dto: CreateAvailabilityDto,
+  // ) {
+  //   console.log('dto', dto)
+  //   return this.availabilityService.createOrUpdateAvailability(trainerId, dto);
+  // }
   @Post('set-availability')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('trainer')
-  setAvailability(
-    @GetUser('sub') trainerId: string,
-    @Body() dto: any,
-  ) {
-    console.log('dto', dto)
-    return this.availabilityService.createOrUpdateAvailability(trainerId, dto);
-  }
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('trainer')
+async setAvailability(
+  @GetUser('sub') trainerId: string,
+  @Body() createAvailabilityDto: CreateAvailabilityDto,
+) {
+  console.log('data', createAvailabilityDto)
+  return this.availabilityService.createOrUpdateAvailability(
+    trainerId,
+    createAvailabilityDto
+  );
+}
 
 
 
@@ -38,6 +51,7 @@ getTrainerAvailabilityForTrainer(
   @GetUser('sub') trainerId: string,
   @Query('date') date: string,
 ) {
+
   return this.availabilityService.getTrainerAvailabilityBasedonDate(
     trainerId,
     date,

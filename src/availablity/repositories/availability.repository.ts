@@ -6,7 +6,10 @@ import { Availability } from '../schemas/availablity.schema';
 import { IAvailabilityRepository } from '../interface/availability-repository.interface';
 
 @Injectable()
-export class AvailabilityRepository extends BaseRepository<Availability> implements IAvailabilityRepository{
+export class AvailabilityRepository
+  extends BaseRepository<Availability>
+  implements IAvailabilityRepository
+{
   constructor(@InjectModel(Availability.name) model: Model<Availability>) {
     super(model);
   }
@@ -15,12 +18,31 @@ export class AvailabilityRepository extends BaseRepository<Availability> impleme
     return this.model.findOne({ trainerId, date }).exec();
   }
 
-  async upsertAvailability(trainerId: string, date: string, slots: string[]) {
-    return this.model.findOneAndUpdate(
-      { trainerId, date },
-      { $set: { slots } },
-      { upsert: true, new: true }
-    ).exec();
+  async upsertAvailability(
+    trainerId: string,
+    date: string,
+    newSlots: { start: string; end: string }[],
+  ) {
+
+     const availability = await this.model.findOne({ trainerId, date });
+
+  let mergedSlots = newSlots;
+
+  if (availability) {
+    
+    const existingSlots = availability.slots || [];
+    const slotExists = (s: { start: string; end: string }) =>
+      existingSlots.some(e => e.start === s.start && e.end === s.end);
+
+    mergedSlots = [...existingSlots, ...newSlots.filter(s => !slotExists(s))];
+  }
+    return this.model
+      .findOneAndUpdate(
+        { trainerId, date },
+        { $set: { slots: mergedSlots } },
+        { upsert: true, new: true },
+      )
+      .exec();
   }
 
   async getAllForTrainer(trainerId: string) {
