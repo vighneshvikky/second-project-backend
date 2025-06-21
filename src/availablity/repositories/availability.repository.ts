@@ -23,19 +23,20 @@ export class AvailabilityRepository
     date: string,
     newSlots: { start: string; end: string }[],
   ) {
+    const availability = await this.model.findOne({ trainerId, date });
 
-     const availability = await this.model.findOne({ trainerId, date });
+    let mergedSlots = newSlots;
 
-  let mergedSlots = newSlots;
+    if (availability) {
+      const existingSlots = availability.slots || [];
+      const slotExists = (s: { start: string; end: string }) =>
+        existingSlots.some((e) => e.start === s.start && e.end === s.end);
 
-  if (availability) {
-    
-    const existingSlots = availability.slots || [];
-    const slotExists = (s: { start: string; end: string }) =>
-      existingSlots.some(e => e.start === s.start && e.end === s.end);
-
-    mergedSlots = [...existingSlots, ...newSlots.filter(s => !slotExists(s))];
-  }
+      mergedSlots = [
+        ...existingSlots,
+        ...newSlots.filter((s) => !slotExists(s)),
+      ];
+    }
     return this.model
       .findOneAndUpdate(
         { trainerId, date },

@@ -4,6 +4,7 @@ import {
   IAvailabilityRepository,
 } from '../interface/availability-repository.interface';
 import { CreateAvailabilityDto } from '../dto/availablity.dto';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class AvailabilityService {
@@ -15,10 +16,27 @@ export class AvailabilityService {
 async createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto) {
   const { date, slots } = dto;
 
+  const now = dayjs();
+  const isToday = dayjs(date).isSame(now, 'day');
+
   const existing = await this.availabilityRepo.findByTrainerAndDate(trainerId, date);
 
   function hasConflict(a: { start: string; end: string }, b: { start: string; end: string }) {
     return a.start < b.end && b.start < a.end;
+  }
+
+
+  for(const slot of slots){
+    if(isToday){
+      const slotStart = dayjs(`${date}T${slot.start}`);
+      if(slotStart.isBefore(now)){
+         throw new BadRequestException(`Slot ${slot.start}-${slot.end} is in the past.`);
+      }
+    }
+
+    if(slot.start >= slot.end){
+      throw new BadRequestException(`Invalid time range: ${slot.start} >= ${slot.end}`)
+    }
   }
 
   if (existing) {
