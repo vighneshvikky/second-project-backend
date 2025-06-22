@@ -80,6 +80,12 @@ export class Trainer extends Document {
     oneToOneSession: number;
     workoutPlan: number;
   };
+
+    @Prop()
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
 }
 
 export const TrainerSchema = SchemaFactory.createForClass(Trainer);

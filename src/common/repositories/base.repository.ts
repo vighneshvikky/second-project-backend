@@ -1,12 +1,12 @@
-import { Model, Document } from 'mongoose';
+import { Model, Document, FilterQuery } from 'mongoose';
 import { IBaseRepository, PaginatedResult, PaginationOptions } from '../interface/base-repository.interface';
 
 
 export abstract class BaseRepository<T extends Document> implements IBaseRepository<T>{
   protected constructor(protected readonly model: Model<T>) {}
-  find(data: Partial<T>) {
-    throw new Error('Method not implemented.');
-  }
+find(filter: FilterQuery<T>): Promise<T[]> {
+  return this.model.find(filter).exec();
+}
   async create(data: Partial<T>): Promise<T> {
     const created = new this.model(data);
     return created.save();

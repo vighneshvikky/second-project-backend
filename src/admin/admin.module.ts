@@ -7,11 +7,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserModule } from '../user/user.module';
 import { TrainerModule } from '../trainer/trainer.module';
-import { IAdminService } from './interfaces/IAdminService';
-import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
-import { UserRepository } from 'src/user/repositories/user.repository';
-import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
-import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 
 @Module({
@@ -29,7 +24,7 @@ import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interfa
   ],
   controllers: [AdminController],
   providers: [
-    { provide: IAdminService, useClass: AdminService },
+    AdminService,
     { provide: IJwtTokenService, useClass: JwtTokenService },
   ],
 })

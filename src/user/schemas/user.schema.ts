@@ -59,6 +59,12 @@ export class User extends Document {
 
   @Prop({ type: [String], default: [] })
   equipments: string[];
+
+    @Prop()
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
