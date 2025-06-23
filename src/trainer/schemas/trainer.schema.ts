@@ -1,29 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { BaseModel } from 'src/common/model/base-model';
 
 @Schema()
-export class Trainer extends Document {
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true, unique: true })
-  email: string;
-
-  @Prop({ required: false })
-  password?: string;
-
-  @Prop({ required: true, enum: ['user', 'trainer', 'admin'] })
-  role: 'user' | 'trainer' | 'admin';
-
-  @Prop({ default: 'local', enum: ['local', 'google'] })
-  provider: 'local' | 'google';
-
-  @Prop({ default: false })
-  isBlocked: boolean;
-
-  @Prop({ default: false })
-  isVerified: boolean;
-
+export class Trainer extends BaseModel {
   @Prop({
     enum: ['pending', 'approved', 'rejected', 'requested'],
     default: 'pending',
@@ -58,14 +37,9 @@ export class Trainer extends Document {
   rejectionReason?: string;
 
   @Prop()
-  googleId?: string;
-
-  @Prop()
   rejectedAt?: Date;
 
-  @Prop()
-  image: string;
-    @Prop({
+  @Prop({
     type: {
       oneToOneSession: { type: Number, required: true, default: 0 },
       workoutPlan: { type: Number, required: true, default: 0 },
@@ -80,12 +54,6 @@ export class Trainer extends Document {
     oneToOneSession: number;
     workoutPlan: number;
   };
-
-    @Prop()
-  createdAt: Date;
-
-  @Prop()
-  updatedAt: Date;
 }
 
 export const TrainerSchema = SchemaFactory.createForClass(Trainer);

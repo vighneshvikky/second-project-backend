@@ -15,7 +15,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // app.use(morgan());
+  app.use(morgan('dev'));
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -89,8 +89,8 @@ async getUsers<T extends User | Trainer>({
   ]);
 
   const combined = [...allUsers, ...allTrainers].sort((a, b) => {
-    const aDate = new Date((a as any).createdAt || 0).getTime();
-    const bDate = new Date((b as any).createdAt || 0).getTime();
+    const aDate = new Date(a.createdAt || 0).getTime();
+    const bDate = new Date(b.createdAt || 0).getTime();
     return bDate - aDate;
   });
 
