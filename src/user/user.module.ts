@@ -8,8 +8,7 @@ import { IUserRepository } from './interfaces/user-repository.interface';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
-import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
-import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
+
 import { TrainerModule } from 'src/trainer/trainer.module';
 
 @Module({

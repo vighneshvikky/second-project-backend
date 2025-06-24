@@ -49,12 +49,15 @@ export class AdminService {
     const accessToken = this.jwtService.signAccessToken({
       sub: 'admin',
       role: 'admin',
+      isBlocked: false
     });
 
     const refreshToken = this.jwtService.signRefreshToken({
       sub: 'admin',
       role: 'admin',
+      isBlocked: false
     });
+
 
     const refreshTokenTTL = 7 * 24 * 60 * 60 * 1000;
     await this.redis.set(refreshToken, 'admin', 'EX', refreshTokenTTL);
@@ -113,7 +116,7 @@ async getUsers<T extends User | Trainer>({
   async toggleBlockStatus(
     id: string,
     role: 'user' | 'trainer',
-  ): Promise<{ message: string; isBlocked: boolean }> {
+  ): Promise<User | Trainer> {
     if (role === 'user') {
       const user = await this.userRepository.findById(id);
       if (!user) {
@@ -122,10 +125,7 @@ async getUsers<T extends User | Trainer>({
       const updatedUser = await this.userRepository.updateById(id, {
         isBlocked: !user.isBlocked,
       });
-      return {
-        message: `User ${updatedUser.isBlocked ? 'blocked' : 'unblocked'} successfully`,
-        isBlocked: updatedUser.isBlocked,
-      };
+ return  updatedUser
     } else if (role === 'trainer') {
       const trainer = await this.trainerRepository.findById(id);
       if (!trainer) {
@@ -134,10 +134,7 @@ async getUsers<T extends User | Trainer>({
       const updatedTrainer = await this.trainerRepository.updateById(id, {
         isBlocked: !trainer.isBlocked,
       });
-      return {
-        message: `User ${updatedTrainer.isBlocked ? 'blocked' : 'unblocked'} successfully`,
-        isBlocked: updatedTrainer.isBlocked,
-      };
+   return  updatedTrainer
     }
     throw new NotFoundException('Invalid role specified');
   }

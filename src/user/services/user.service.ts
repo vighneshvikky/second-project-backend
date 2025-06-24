@@ -5,8 +5,6 @@ import { UpdateUserDto } from '../dtos/user.dto';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
-
-
 export interface FindApprovedTrainerQuery {
   role: 'trainer';
   verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
@@ -14,8 +12,6 @@ export interface FindApprovedTrainerQuery {
   category?: string;
   name?: string | { $regex: string; $options: string };
 }
-
-
 
 @Injectable()
 export class UserService {
@@ -29,10 +25,9 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepo.findByEmail(email);
   }
-
-
-
-
+  async findById(id: string): Promise<User | null> {
+    return this.userRepo.findById(id);
+  }
 
   async updatePassword(userId: string, newPassword: string): Promise<void> {
     await this.userRepo.updatePassword(userId, newPassword);
@@ -48,10 +43,8 @@ export class UserService {
     });
   }
 
-  async findTrainer(
-    id: string
-  ): Promise<Trainer | null>{
-    return await this.trainerRepo.findById(id)
+  async findTrainer(id: string): Promise<Trainer | null> {
+    return await this.trainerRepo.findById(id);
   }
 
   async findApprovedTrainer(filters: {
@@ -71,8 +64,7 @@ export class UserService {
     if (filters.name) {
       query.name = { $regex: filters.name, $options: 'i' };
     }
-   
-     return await this.trainerRepo.findAll(query);
 
+    return await this.trainerRepo.findAll(query);
   }
 }

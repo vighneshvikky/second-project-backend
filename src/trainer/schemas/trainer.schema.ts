@@ -7,10 +7,10 @@ export class Trainer extends BaseModel {
     enum: ['pending', 'approved', 'rejected', 'requested'],
     default: 'pending',
   })
-  verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
+  verificationStatus?: 'pending' | 'approved' | 'rejected' | 'requested';
 
   @Prop()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @Prop()
   verifiedAt?: Date;
@@ -22,7 +22,7 @@ export class Trainer extends BaseModel {
   specialization?: string[];
 
   @Prop()
-  experience: number;
+  experience?: number;
 
   @Prop({ required: false, maxlength: 1000 })
   bio?: string;
@@ -31,7 +31,7 @@ export class Trainer extends BaseModel {
   certificationUrl?: string;
 
   @Prop()
-  idProofUrl: string;
+  idProofUrl?: string;
 
   @Prop()
   rejectionReason?: string;
@@ -50,7 +50,7 @@ export class Trainer extends BaseModel {
       workoutPlan: 0,
     },
   })
-  pricing: {
+  pricing?: {
     oneToOneSession: number;
     workoutPlan: number;
   };

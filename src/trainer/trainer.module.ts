@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TrainerController } from './controllers/trainer.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Trainer, TrainerSchema } from './schemas/trainer.schema';
@@ -9,6 +9,7 @@ import { ITrainerRepository } from './interfaces/trainer-repository.interface';
 import { JwtModule } from '@nestjs/jwt';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
       },
     ]),
     JwtModule.register({}),
+    forwardRef(() => UserModule)
   ],
   controllers: [TrainerController],
   providers: [

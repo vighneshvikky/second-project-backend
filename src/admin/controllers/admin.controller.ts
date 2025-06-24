@@ -19,6 +19,8 @@ import { Roles } from 'src/common/decorator/role.decorator';
 import { setTokenCookies } from 'src/common/helpers/token.setter';
 import { LoginAdminDto } from 'src/auth/dto/admin.dto';
 import { UserQueryDto } from '../dtos/user-query.dto';
+import { Trainer } from 'src/trainer/schemas/trainer.schema';
+import { User } from 'aws-sdk/clients/budgets';
 
 @Controller('admin')
 export class AdminController {
@@ -93,11 +95,8 @@ export class AdminController {
   async toggleBlockStatus(
     @Param('id') id: string,
     @Query('role') role: 'user' | 'trainer',
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-    @Query('search') search: string,
-  ) {
-    await this.adminService.toggleBlockStatus(id, role);
-    // return this.adminService.getUsers({ page, limit, search });
+  ): Promise<User | Trainer> {
+   return await this.adminService.toggleBlockStatus(id, role);
+    
   }
 }

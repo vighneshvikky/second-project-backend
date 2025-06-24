@@ -11,5 +11,7 @@ export class UserRepository extends BaseRepository<User> {
     super(model);
   }
 
-  
+    async findById(id: string): Promise<User | null> {
+      return this.model.findById(id).exec();
+    }
 }

@@ -59,10 +59,12 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,
+      isBlocked: false
     });
     const refreshToken = this.jwtService.signRefreshToken({
       sub: user._id,
       role: user.role,
+      isBlocked: false
     });
     await this.redis.set(
       refreshToken,
@@ -87,6 +89,7 @@ export class AuthService {
     const token = this.jwtService.signPasswordResetToken({
       sub: user.id,
       role: user.role,
+      isBlocked: false
     });
 
     const resetUrl = `http://localhost:4200/auth/reset-password?token=${token}&role=${role}`;
@@ -137,11 +140,13 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: userId,
       role: role,
+      isBlocked: false
     });
 
     const newRefreshToken = this.jwtService.signRefreshToken({
       sub: userId,
       role,
+      isBlocked: false
     });
 
     await this.redis.set(newRefreshToken, userId, 'EX', 7 * 24 * 60 * 60);
@@ -187,10 +192,12 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,
+      isBlocked: false
     });
     const refreshToken = this.jwtService.signRefreshToken({
       sub: user._id,
       role: user.role,
+      isBlocked: false
     });
     await this.redis.set(
       refreshToken,
@@ -269,10 +276,12 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,
+      isBlocked: false
     });
     const refreshToken = this.jwtService.signRefreshToken({
       sub: user._id,
       role: user.role,
+      isBlocked: false
     });
     await this.redis.set(
       refreshToken,
