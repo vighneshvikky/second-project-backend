@@ -13,17 +13,15 @@ export interface PaginatedResult<T> {
   totalPages: number;
 }
 
-// export const IBaseRepository = Symbol('IBaseRepository')
+
 
 export interface IBaseRepository<T> {
   create(data: Partial<T>): Promise<T>;
   findById(id: string): Promise<T | null>;
   findAll(filter?: Record<string, any>): Promise<T[]>;
   find(filter: FilterQuery<T>): Promise<T[]>;
-  findOne(filter: Record<string, any>): Promise<T | null>;
   findByEmail(email: string): Promise<T | null>;
   deleteById(id: string): Promise<void>;
-  search(query: Record<string, any>): Promise<T[]>;
   findPaginated(
     query: Record<string, any>,
     options: PaginationOptions,

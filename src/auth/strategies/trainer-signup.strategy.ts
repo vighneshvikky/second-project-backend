@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import { ISignUpStrategy } from '../interfaces/signup.strategy.interface';
+ import { ISignUpStrategy } from '../interfaces/signup.strategy.interface';
 import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
 import { CreateAccountDto } from '../dto/createAccount.dto';
 import { PasswordUtil } from 'src/common/helpers/password.util';

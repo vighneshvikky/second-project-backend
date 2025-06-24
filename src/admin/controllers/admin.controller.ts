@@ -8,30 +8,17 @@ import {
   Patch,
   Param,
   UseGuards,
-  
 } from '@nestjs/common';
 import { AdminService } from '../services/admin.service';
 import { Response } from 'express';
-import { GetUsersQueryDto } from 'src/common/helpers/dtos/get-user-query.dto';
+import { GetUnverifiedTrainersQueryDto } from 'src/common/helpers/dtos/get-user-query.dto';
 import { BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
 import { setTokenCookies } from 'src/common/helpers/token.setter';
 import { LoginAdminDto } from 'src/auth/dto/admin.dto';
-
-
-class AdminLoginDto {
-  email: string;
-  password: string;
-}
-
-interface GetUsersQuery {
-  search?: string;
-  role?: 'user' | 'trainer';
-  page?: number;
-  limit?: number;
-}
+import { UserQueryDto } from '../dtos/user-query.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -47,8 +34,8 @@ export class AdminController {
         loginDto.email,
         loginDto.password,
       );
-   console.log('accessToken', accessToken);
-   console.log('refreshToken', refreshToken)
+    console.log('accessToken', accessToken);
+    console.log('refreshToken', refreshToken);
     setTokenCookies(response, accessToken, refreshToken);
     return {
       message: 'Admin login successful',
@@ -59,20 +46,22 @@ export class AdminController {
     };
   }
 
+  @Get('users')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  @Get('users')
-  async getUsers(@Query() query: any) {
-     console.log('query', query)
-    const { page = 1, limit = 10, ...rest } = query;
-  return this.adminService.getUsers({ ...rest, page, limit });
+  async getUsers(@Query() query: UserQueryDto) {
+    const { page = '1', limit = '10', ...rest } = query;
+    return this.adminService.getUsers({
+      ...rest,
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
   }
-
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('listTrainers')
-  async listTrainers(@Query() query: GetUsersQueryDto) {
+  async listTrainers(@Query() query: GetUnverifiedTrainersQueryDto) {
     const data = await this.adminService.getUnverifiedTrainers(query);
     return data;
   }
@@ -98,7 +87,6 @@ export class AdminController {
     return this.adminService.rejectTrainer(trainerId, reason);
   }
 
-  
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Patch('users/:id/toggle-block')
@@ -110,6 +98,6 @@ export class AdminController {
     @Query('search') search: string,
   ) {
     await this.adminService.toggleBlockStatus(id, role);
-    return this.adminService.getUsers({ page, limit, search });
+    // return this.adminService.getUsers({ page, limit, search });
   }
 }

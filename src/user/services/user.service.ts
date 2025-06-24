@@ -5,6 +5,18 @@ import { UpdateUserDto } from '../dtos/user.dto';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
+
+
+export interface FindApprovedTrainerQuery {
+  role: 'trainer';
+  verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
+  isBlocked: boolean;
+  category?: string;
+  name?: string | { $regex: string; $options: string };
+}
+
+
+
 @Injectable()
 export class UserService {
   constructor(
@@ -46,7 +58,7 @@ export class UserService {
     category?: string;
     name?: string;
   }): Promise<Trainer[]> {
-    const query: any = {
+    const query: FindApprovedTrainerQuery = {
       role: 'trainer',
       verificationStatus: 'approved',
       isBlocked: false,

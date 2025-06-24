@@ -1,7 +1,7 @@
 import { IsOptional, IsEnum, IsString, IsNumber, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class GetUsersQueryDto {
+export class GetUnverifiedTrainersQueryDto {
   @IsOptional()
   @IsString()
   search?: string;

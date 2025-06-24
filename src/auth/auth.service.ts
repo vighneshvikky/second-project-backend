@@ -19,6 +19,9 @@ import axios from 'axios';
 import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
+import { User } from 'aws-sdk/clients/budgets';
+import { Trainer } from 'src/trainer/schemas/trainer.schema';
+import { BaseModel } from 'src/common/model/base-model';
 
 @Injectable()
 export class AuthService {
@@ -202,8 +205,8 @@ export class AuthService {
   async googleLogin(
     code: string,
     role: string,
-  ): Promise<{ accessToken: string; refreshToken: string; user: any }> {
-    
+  ): Promise<{ accessToken: string; refreshToken: string; user: BaseModel }> {
+  
     const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
@@ -262,7 +265,7 @@ export class AuthService {
         });
       }
     }
-
+  
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,

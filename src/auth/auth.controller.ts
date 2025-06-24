@@ -30,7 +30,7 @@ export class AuthController {
     readonly signupStratergyResolver: SignUpStrategyResolver,
     private readonly otpService: OtpService,
     private readonly authService: AuthService,
-    @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService
+    @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
   ) {
     console.log('✅ AuthController loaded');
   }
@@ -39,18 +39,15 @@ export class AuthController {
     const stratergy = this.signupStratergyResolver.resolve(body.role);
 
     const otpSuccess = await stratergy.signUp(body);
-
     return otpSuccess;
   }
   @Post('verify-otp')
   async verifyOtp(@Body() body: VerifyOtpDto) {
-
     return await this.otpService.verifyOtp(body);
   }
 
   @Post('resend-otp')
   async resendOtp(@Body() body: ResendOtpDto) {
-   
     return await this.otpService.resendOtp(body);
   }
 
@@ -62,9 +59,8 @@ export class AuthController {
     console.log('user body', body);
     const { accessToken, refreshToken, user } =
       await this.authService.verifyLogin(body);
- 
 
-     setTokenCookies(res, accessToken, refreshToken)
+    setTokenCookies(res, accessToken, refreshToken);
     return {
       message: 'Login successfully',
       data: {
@@ -93,7 +89,7 @@ export class AuthController {
   async refreshToken(@Req() req: Request, @Res() res: Response) {
     console.log('redirected to refresh token....');
     const refreshToken = req.cookies['refresh_token'];
-    console.log('refreshToken', refreshToken)
+    console.log('refreshToken', refreshToken);
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token missing');
     }
@@ -108,7 +104,7 @@ export class AuthController {
       await this.authService.rotateRefreshToken(refreshToken, payload.role);
 
     setTokenCookies(res, accessToken, newRefreshToken);
-    
+
     return res.send({
       message: 'Tokens refreshed',
       role: payload.role,
@@ -153,15 +149,4 @@ export class AuthController {
       `http://localhost:4200/auth/callback?user=${encodeURIComponent(JSON.stringify(user))}`,
     );
   }
-
-
-  @Get('getUser')
-  @UseGuards(JwtAuthGuard)
-  async getCurrentUser(@Req() req: any) { 
-    
-    const user = await this.authService.getUser(req.user.sub);
-    return user;
-  }
-
-
 }
