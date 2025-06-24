@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Param,
   Patch,
   Query,
@@ -15,10 +16,11 @@ import { Roles } from 'src/common/decorator/role.decorator';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { NotBlockedGuard } from 'src/common/guards/notBlocked.guard';
+import { IUserService, USER_SERVICE } from '../interfaces/user-service.interface';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(@Inject(USER_SERVICE) private readonly userService: IUserService) {}
   @UseGuards(JwtAuthGuard, RolesGuard, NotBlockedGuard)
   @Roles('user')
   @Patch('update-profile')

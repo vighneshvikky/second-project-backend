@@ -5,9 +5,11 @@ import {
 } from '../interface/availability-repository.interface';
 import { CreateAvailabilityDto } from '../dto/availablity.dto';
 import * as dayjs from 'dayjs';
+import { IAvailabilityService } from '../interface/availability-service.interface';
+
 
 @Injectable()
-export class AvailabilityService {
+export class AvailabilityService implements IAvailabilityService{
   constructor(
     @Inject(AVAILABILITY_REPOSITORY)
     private readonly availabilityRepo: IAvailabilityRepository,

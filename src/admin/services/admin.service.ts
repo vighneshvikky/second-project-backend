@@ -5,17 +5,15 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PasswordUtil } from 'src/common/helpers/password.util';
-import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import Redis from 'ioredis';
 import { Inject } from '@nestjs/common';
-import { UserRepository } from '../../user/repositories/user.repository';
-import { TrainerRepository } from '../../trainer/repositories/trainer.repository';
 import { User } from 'src/user/schemas/user.schema';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { PaginatedResult } from 'src/common/interface/base-repository.interface';
 import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
+import { IAdminService } from '../interface/admin-service.interface';
 
 interface GetUsersOptions {
   search?: string;
@@ -25,7 +23,7 @@ interface GetUsersOptions {
 }
 
 @Injectable()
-export class AdminService {
+export class AdminService implements IAdminService{
   private readonly adminEmail = process.env.ADMIN_EMAIL!;
   private readonly adminPassword = process.env.ADMIN_PASSWORD!;
 

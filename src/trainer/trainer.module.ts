@@ -10,6 +10,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import { UserModule } from 'src/user/user.module';
+import { TRAINER_SERVICE } from './interfaces/trainer-service.interface';
+import { AWS_S3_SERVICE } from 'src/common/aws/interface/aws-s3-service.interface';
 
 @Module({
   imports: [
@@ -33,12 +35,18 @@ import { UserModule } from 'src/user/user.module';
       provide: IJwtTokenService,
       useClass: JwtTokenService,
     },
-    TrainerService,
-    AwsS3Service,
+    {
+      provide: TRAINER_SERVICE,
+      useClass: TrainerService
+    },
+    {
+      provide: AWS_S3_SERVICE,
+      useClass: AwsS3Service
+    },
   ],
   exports: [
     { provide: ITrainerRepository, useClass: TrainerRepository },
-    TrainerService,
+    TRAINER_SERVICE,
   ],
 })
 export class TrainerModule {}

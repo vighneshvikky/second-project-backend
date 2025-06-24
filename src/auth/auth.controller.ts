@@ -13,27 +13,27 @@ import {
 import { SignUpStrategyResolver } from './strategies/signup-strategy.resolver';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
-import { OtpService } from './services/otp/otp.service';
 import { LoginDto } from './dto/login.dto';
-import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { setTokenCookies } from 'src/common/helpers/token.setter';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
 import { SignupDto } from './dto/auth.dto';
+import { IOtpService, OTP_SERVICE } from './interfaces/otp-service.interface';
+import {
+  AUTH_SERVICE,
+  IAuthService,
+} from './interfaces/auth-service.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     readonly signupStratergyResolver: SignUpStrategyResolver,
-    private readonly otpService: OtpService,
-    private readonly authService: AuthService,
+    @Inject(OTP_SERVICE) private readonly otpService: IOtpService,
+    @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
     @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
-  ) {
-    console.log('✅ AuthController loaded');
-  }
+  ) {}
   @Post('signup')
   async signUp(@Body() body: SignupDto) {
     const stratergy = this.signupStratergyResolver.resolve(body.role);

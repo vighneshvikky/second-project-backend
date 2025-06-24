@@ -8,6 +8,7 @@ import { AVAILABILITY_REPOSITORY } from './interface/availability-repository.int
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
+import { AVAILABILITY_SERVICE } from './interface/availability-service.interface';
 
 @Module({
   imports: [
@@ -18,7 +19,10 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   controllers: [AvailabilityController],
   providers: [
-    AvailabilityService,
+    {
+      provide: AVAILABILITY_SERVICE,
+      useClass: AvailabilityService,
+    },
     {
       provide: AVAILABILITY_REPOSITORY,
       useClass: AvailabilityRepository,
@@ -28,6 +32,6 @@ import { JwtModule } from '@nestjs/jwt';
       useClass: JwtTokenService,
     },
   ],
-  exports: [AvailabilityService],
+  exports: [AVAILABILITY_SERVICE],
 })
 export class AvailabilityModule {}

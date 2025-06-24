@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserModule } from '../user/user.module';
 import { TrainerModule } from '../trainer/trainer.module';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
+import { ADMIN_SERVICE } from './interface/admin-service.interface';
 
 @Module({
   imports: [
@@ -24,7 +25,10 @@ import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interfa
   ],
   controllers: [AdminController],
   providers: [
-    AdminService,
+    {
+   provide: ADMIN_SERVICE,
+   useClass: AdminService
+    },
     { provide: IJwtTokenService, useClass: JwtTokenService },
   ],
 })

@@ -1,22 +1,19 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { TrainerRepository } from '../repositories/trainer.repository';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Trainer } from '../schemas/trainer.schema';
 import { PasswordUtil } from 'src/common/helpers/password.util';
-import {  UpdateTrainerProfileDto } from '../dtos/trainer.dto';
-import { AwsS3Service } from 'src/common/aws/services/aws-s3.service';
 import { ITrainerRepository } from '../interfaces/trainer-repository.interface';
+import { ITrainerService } from '../interfaces/trainer-service.interface';
+import {
+  AWS_S3_SERVICE,
+  IAwsS3Service,
+} from 'src/common/aws/interface/aws-s3-service.interface';
 
 @Injectable()
-export class TrainerService {
+export class TrainerService implements ITrainerService {
   constructor(
     @Inject(ITrainerRepository)
     private readonly trainerRepo: ITrainerRepository,
-    readonly awsS3Service: AwsS3Service,
+    @Inject(AWS_S3_SERVICE) readonly awsS3Service: IAwsS3Service,
   ) {}
 
   async findByEmail(email: string): Promise<Trainer | null> {
@@ -33,8 +30,6 @@ export class TrainerService {
     }
     return this.trainerRepo.create(payload);
   }
-
-
 
   async createTrainerWithFiles(data: {
     name: string;
@@ -58,23 +53,20 @@ export class TrainerService {
     if (!trainer) {
       throw new NotFoundException('Trainer not found');
     }
-  // const updateData = {
-  //   ...dto,
-  //   pricing: {
-  //     oneToOneSession: dto.oneToOneSession,
-  //     workoutPlan: dto.workoutPlan,
-  //   },
-  //   certificationUrl: dto.certification
-  // };
+    // const updateData = {
+    //   ...dto,
+    //   pricing: {
+    //     oneToOneSession: dto.oneToOneSession,
+    //     workoutPlan: dto.workoutPlan,
+    //   },
+    //   certificationUrl: dto.certification
+    // };
 
-  // delete updateData.oneToOneSessionPrice;
-  // delete updateData.workoutPlanPrice;
- 
+    // delete updateData.oneToOneSessionPrice;
+    // delete updateData.workoutPlanPrice;
 
     const updatedTrainer = await this.trainerRepo.updateById(trainerId, dto);
 
     return updatedTrainer;
   }
-
-
 }

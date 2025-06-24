@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { IMailService } from './mail-service.interface';
 
 @Injectable()
-export class MailService {
-  constructor(private readonly mailerService: MailerService) {}
+export class MailService implements IMailService{
+  constructor(private readonly mailerService: MailerService ) {}
 
   async sendOtp(email: string, otp: string): Promise<void> {
     await this.mailerService.sendMail({

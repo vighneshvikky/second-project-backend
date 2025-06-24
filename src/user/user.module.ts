@@ -10,6 +10,7 @@ import { JwtTokenService } from 'src/auth/services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
 
 import { TrainerModule } from 'src/trainer/trainer.module';
+import { USER_SERVICE } from './interfaces/user-service.interface';
 
 @Module({
   imports: [
@@ -28,11 +29,14 @@ import { TrainerModule } from 'src/trainer/trainer.module';
       useClass: JwtTokenService,
     },
     UserRepository,
-    UserService,
+    {
+      provide: USER_SERVICE,
+      useClass: UserService
+    }
   ],
   exports: [
     { provide: IUserRepository, useClass: UserRepository },
-    UserService,
+    USER_SERVICE,
   ],
 })
 export class UserModule {}

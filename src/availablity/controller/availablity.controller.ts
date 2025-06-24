@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Post,
   Query,
   UseGuards,
@@ -13,10 +14,12 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { AVAILABILITY_SERVICE, IAvailabilityService } from '../interface/availability-service.interface';
 
 @Controller('availability')
 export class AvailabilityController {
-  constructor(private readonly availabilityService: AvailabilityService) {}
+  
+  constructor(@Inject(AVAILABILITY_SERVICE) private readonly availabilityService: IAvailabilityService) {}
 
   // @Post('set-availability')
   // @UseGuards(JwtAuthGuard, RolesGuard)

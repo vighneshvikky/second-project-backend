@@ -8,6 +8,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { AdminService } from '../services/admin.service';
 import { Response } from 'express';
@@ -21,10 +22,11 @@ import { LoginAdminDto } from 'src/auth/dto/admin.dto';
 import { UserQueryDto } from '../dtos/user-query.dto';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { User } from 'aws-sdk/clients/budgets';
+import { ADMIN_SERVICE, IAdminService } from '../interface/admin-service.interface';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(@Inject(ADMIN_SERVICE) private readonly adminService: IAdminService) {}
 
   @Post('login')
   async login(

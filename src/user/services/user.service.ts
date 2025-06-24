@@ -5,6 +5,7 @@ import { UpdateUserDto } from '../dtos/user.dto';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
+
 export interface FindApprovedTrainerQuery {
   role: 'trainer';
   verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
@@ -56,7 +57,6 @@ export class UserService {
       verificationStatus: 'approved',
       isBlocked: false,
     };
-
     if (filters.category) {
       query.category = filters.category;
     }

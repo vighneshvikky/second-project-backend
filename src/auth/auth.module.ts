@@ -12,6 +12,11 @@ import { JwtTokenService } from './services/jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/common/helpers/mailer/mailer.module';
 import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
+import { OTP_SERVICE } from './interfaces/otp-service.interface';
+import { OtpService } from './services/otp/otp.service';
+import { MAIL_SERVICE } from 'src/common/helpers/mailer/mail-service.interface';
+import { MailService } from 'src/common/helpers/mailer/mailer.service';
+import { AUTH_SERVICE } from './interfaces/auth-service.interface';
 
 
 @Module({
@@ -31,10 +36,19 @@ import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
     SignUpStrategyResolver,
     TrainerSignUpStrategy,
     UserSignUpStrategy,
-    AuthService,
+    {
+      provide: AUTH_SERVICE,
+      useClass: AuthService
+    },
     {
       provide: IJwtTokenService,
       useClass: JwtTokenService
+    },{
+      provide: OTP_SERVICE,
+      useClass: OtpService
+    },{
+      provide: MAIL_SERVICE,
+      useClass: MailService
     }
   
   ],

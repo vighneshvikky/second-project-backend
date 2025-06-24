@@ -6,30 +6,36 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { UserService } from 'src/user/services/user.service';
-import { TrainerService } from 'src/trainer/services/trainer.service';
 import { PasswordUtil } from 'src/common/helpers/password.util';
-import { JwtTokenService } from './services/jwt/jwt.service';
 import Redis from 'ioredis';
 import { MailService } from 'src/common/helpers/mailer/mailer.service';
-import { UserRepository } from 'src/user/repositories/user.repository';
-import { TrainerRepository } from 'src/trainer/repositories/trainer.repository';
 import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
 import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { IJwtTokenService } from './interfaces/ijwt-token-service.interface';
-import { User } from 'aws-sdk/clients/budgets';
-import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { BaseModel } from 'src/common/model/base-model';
+import {
+  IUserService,
+  USER_SERVICE,
+} from 'src/user/interfaces/user-service.interface';
+import {
+  ITrainerService,
+  TRAINER_SERVICE,
+} from 'src/trainer/interfaces/trainer-service.interface';
+import {
+  IMailService,
+  MAIL_SERVICE,
+} from 'src/common/helpers/mailer/mail-service.interface';
+import { IAuthService } from './interfaces/auth-service.interface';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
-    private userService: UserService,
-    private trainerService: TrainerService,
+    @Inject(USER_SERVICE) private userService: IUserService,
+    @Inject(TRAINER_SERVICE) private trainerService: ITrainerService,
     @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
-    private mailService: MailService,
+    @Inject(MAIL_SERVICE) private readonly mailService: IMailService,
     @Inject(IUserRepository) private readonly userRepo: IUserRepository,
     @Inject(ITrainerRepository)
     private readonly trainerRepo: ITrainerRepository,
@@ -59,12 +65,12 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
     const refreshToken = this.jwtService.signRefreshToken({
       sub: user._id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
     await this.redis.set(
       refreshToken,
@@ -89,7 +95,7 @@ export class AuthService {
     const token = this.jwtService.signPasswordResetToken({
       sub: user.id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
 
     const resetUrl = `http://localhost:4200/auth/reset-password?token=${token}&role=${role}`;
@@ -140,13 +146,13 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: userId,
       role: role,
-      isBlocked: false
+      isBlocked: false,
     });
 
     const newRefreshToken = this.jwtService.signRefreshToken({
       sub: userId,
       role,
-      isBlocked: false
+      isBlocked: false,
     });
 
     await this.redis.set(newRefreshToken, userId, 'EX', 7 * 24 * 60 * 60);
@@ -192,12 +198,12 @@ export class AuthService {
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
     const refreshToken = this.jwtService.signRefreshToken({
       sub: user._id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
     await this.redis.set(
       refreshToken,
@@ -213,7 +219,6 @@ export class AuthService {
     code: string,
     role: string,
   ): Promise<{ accessToken: string; refreshToken: string; user: BaseModel }> {
-  
     const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
@@ -272,16 +277,16 @@ export class AuthService {
         });
       }
     }
-  
+
     const accessToken = this.jwtService.signAccessToken({
       sub: user._id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
     const refreshToken = this.jwtService.signRefreshToken({
       sub: user._id,
       role: user.role,
-      isBlocked: false
+      isBlocked: false,
     });
     await this.redis.set(
       refreshToken,
