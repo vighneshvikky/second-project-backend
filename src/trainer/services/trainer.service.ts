@@ -53,17 +53,7 @@ export class TrainerService implements ITrainerService {
     if (!trainer) {
       throw new NotFoundException('Trainer not found');
     }
-    // const updateData = {
-    //   ...dto,
-    //   pricing: {
-    //     oneToOneSession: dto.oneToOneSession,
-    //     workoutPlan: dto.workoutPlan,
-    //   },
-    //   certificationUrl: dto.certification
-    // };
 
-    // delete updateData.oneToOneSessionPrice;
-    // delete updateData.workoutPlanPrice;
 
     const updatedTrainer = await this.trainerRepo.updateById(trainerId, dto);
 

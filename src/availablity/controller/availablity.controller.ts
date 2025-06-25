@@ -21,16 +21,7 @@ export class AvailabilityController {
   
   constructor(@Inject(AVAILABILITY_SERVICE) private readonly availabilityService: IAvailabilityService) {}
 
-  // @Post('set-availability')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('trainer')
-  // setAvailability(
-  //   @GetUser('sub') trainerId: string,
-  //   @Body() dto: CreateAvailabilityDto,
-  // ) {
-  //   console.log('dto', dto)
-  //   return this.availabilityService.createOrUpdateAvailability(trainerId, dto);
-  // }
+
   @Post('set-availability')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('trainer')
@@ -39,10 +30,13 @@ async setAvailability(
   @Body() createAvailabilityDto: CreateAvailabilityDto,
 ) {
   console.log('data', createAvailabilityDto)
-  return this.availabilityService.createOrUpdateAvailability(
+  const data = await this.availabilityService.createOrUpdateAvailability(
     trainerId,
     createAvailabilityDto
   );
+
+  console.log('data', data);
+  data;
 }
 
 
