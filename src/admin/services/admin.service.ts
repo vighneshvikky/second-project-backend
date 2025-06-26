@@ -14,6 +14,8 @@ import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 import { IAdminService } from '../interface/admin-service.interface';
+import { MAIL_SERVICE } from 'src/common/helpers/mailer/mail-service.interface';
+import { MailService } from 'src/common/helpers/mailer/mailer.service';
 
 interface GetUsersOptions {
   search?: string;
@@ -23,7 +25,7 @@ interface GetUsersOptions {
 }
 
 @Injectable()
-export class AdminService implements IAdminService{
+export class AdminService implements IAdminService {
   private readonly adminEmail = process.env.ADMIN_EMAIL!;
   private readonly adminPassword = process.env.ADMIN_PASSWORD!;
 
@@ -31,6 +33,7 @@ export class AdminService implements IAdminService{
     @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     @Inject(IUserRepository) private readonly userRepository: IUserRepository,
+    @Inject(MAIL_SERVICE) private readonly mailService: MailService,
     @Inject(ITrainerRepository)
     private readonly trainerRepository: ITrainerRepository,
   ) {}
@@ -47,15 +50,14 @@ export class AdminService implements IAdminService{
     const accessToken = this.jwtService.signAccessToken({
       sub: 'admin',
       role: 'admin',
-      isBlocked: false
+      isBlocked: false,
     });
 
     const refreshToken = this.jwtService.signRefreshToken({
       sub: 'admin',
       role: 'admin',
-      isBlocked: false
+      isBlocked: false,
     });
-
 
     const refreshTokenTTL = 7 * 24 * 60 * 60 * 1000;
     await this.redis.set(refreshToken, 'admin', 'EX', refreshTokenTTL);
@@ -63,53 +65,51 @@ export class AdminService implements IAdminService{
     return { accessToken, refreshToken };
   }
 
-async getUsers<T extends User | Trainer>({
-  search,
-  page = 1,
-  limit = 10,
-}: GetUsersOptions): Promise<PaginatedResult<T>> {
-  page = Number(page);
-  limit = Number(limit);
+  async getUsers<T extends User | Trainer>({
+    search,
+    page = 1,
+    limit = 10,
+  }: GetUsersOptions): Promise<PaginatedResult<T>> {
+    page = Number(page);
+    limit = Number(limit);
 
-  if (!limit || limit <= 0) {
-    throw new BadRequestException('Limit must be greater than 0');
+    if (!limit || limit <= 0) {
+      throw new BadRequestException('Limit must be greater than 0');
+    }
+
+    const searchQuery = search
+      ? {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const [allUsers, allTrainers] = await Promise.all([
+      this.userRepository.find(searchQuery),
+      this.trainerRepository.find(searchQuery),
+    ]);
+
+    const combined = [...allUsers, ...allTrainers].sort((a, b) => {
+      const aDate = new Date(a.createdAt || 0).getTime();
+      const bDate = new Date(b.createdAt || 0).getTime();
+      return bDate - aDate;
+    });
+
+    const total = combined.length;
+    const totalPages = Math.ceil(total / limit);
+    const startIndex = (page - 1) * limit;
+    const paginatedData = combined.slice(startIndex, startIndex + limit);
+
+    return {
+      data: paginatedData as T[],
+      total,
+      page,
+      limit,
+      totalPages,
+    };
   }
-
-  const searchQuery = search
-    ? {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-        ],
-      }
-    : {};
-
-  const [allUsers, allTrainers] = await Promise.all([
-    this.userRepository.find(searchQuery),
-    this.trainerRepository.find(searchQuery),
-  ]);
-
-  const combined = [...allUsers, ...allTrainers].sort((a, b) => {
-    const aDate = new Date(a.createdAt || 0).getTime();
-    const bDate = new Date(b.createdAt || 0).getTime();
-    return bDate - aDate;
-  });
-
-  const total = combined.length;
-  const totalPages = Math.ceil(total / limit);
-  const startIndex = (page - 1) * limit;
-  const paginatedData = combined.slice(startIndex, startIndex + limit);
-
-  return {
-    data: paginatedData as T[],
-    total,
-    page,
-    limit,
-    totalPages,
-  };
-}
-
-
 
   async toggleBlockStatus(
     id: string,
@@ -123,7 +123,7 @@ async getUsers<T extends User | Trainer>({
       const updatedUser = await this.userRepository.updateById(id, {
         isBlocked: !user.isBlocked,
       });
- return  updatedUser
+      return updatedUser;
     } else if (role === 'trainer') {
       const trainer = await this.trainerRepository.findById(id);
       if (!trainer) {
@@ -132,7 +132,7 @@ async getUsers<T extends User | Trainer>({
       const updatedTrainer = await this.trainerRepository.updateById(id, {
         isBlocked: !trainer.isBlocked,
       });
-   return  updatedTrainer
+      return updatedTrainer;
     }
     throw new NotFoundException('Invalid role specified');
   }
@@ -146,20 +146,26 @@ async getUsers<T extends User | Trainer>({
   }
 
   async approveTrainer(trainerId: string): Promise<Trainer> {
-    return this.trainerRepository.updateById(trainerId, {
+    const trainer = await this.trainerRepository.updateById(trainerId, {
       isVerified: true,
       verificationStatus: 'approved',
       verifiedAt: new Date(),
     });
+
+    await this.mailService.sendMail(trainer.email, 'accept');
+
+    return trainer;
   }
 
   async rejectTrainer(trainerId: string, reason: string): Promise<Trainer> {
-    return this.trainerRepository.updateById(trainerId, {
+    const trainer = await this.trainerRepository.updateById(trainerId, {
       isVerified: false,
       verificationStatus: 'rejected',
       rejectionReason: reason,
       rejectedAt: new Date(),
     });
+    await this.mailService.sendMail(trainer.email, 'reject');
+    return trainer;
   }
 
   private getRepoByRole(

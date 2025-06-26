@@ -9,6 +9,9 @@ import { UserModule } from '../user/user.module';
 import { TrainerModule } from '../trainer/trainer.module';
 import { IJwtTokenService } from 'src/auth/interfaces/ijwt-token-service.interface';
 import { ADMIN_SERVICE } from './interface/admin-service.interface';
+import { MailModule } from 'src/common/helpers/mailer/mailer.module';
+import { MAIL_SERVICE } from 'src/common/helpers/mailer/mail-service.interface';
+import { MailService } from 'src/common/helpers/mailer/mailer.service';
 
 @Module({
   imports: [
@@ -22,6 +25,7 @@ import { ADMIN_SERVICE } from './interface/admin-service.interface';
     }),
     UserModule,
     TrainerModule,
+    MailModule
   ],
   controllers: [AdminController],
   providers: [
@@ -30,6 +34,7 @@ import { ADMIN_SERVICE } from './interface/admin-service.interface';
    useClass: AdminService
     },
     { provide: IJwtTokenService, useClass: JwtTokenService },
+    {provide: MAIL_SERVICE, useClass: MailService}
   ],
 })
 export class AdminModule {}

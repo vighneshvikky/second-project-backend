@@ -28,4 +28,27 @@ export class MailService implements IMailService{
       `,
     });
   }
+
+
+
+  async sendMail(email: string, data: 'accept' | 'reject'): Promise<void> {
+  const subject = data === 'accept' ? 'Trainer Approval' : 'Trainer Rejection';
+  const message =
+    data === 'accept'
+      ? `<p>Congratulations! Your trainer account has been approved.</p>`
+      : `<p>We regret to inform you that your trainer account has been rejected.</p>`;
+
+  await this.mailerService.sendMail({
+    to: email,
+    subject,
+    text: '', 
+    html: `
+      <div>
+        <h2>${subject}</h2>
+        ${message}
+      </div>
+    `,
+  });
+}
+
 }
