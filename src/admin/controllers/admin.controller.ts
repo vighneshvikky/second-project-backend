@@ -9,6 +9,7 @@ import {
   Param,
   UseGuards,
   Inject,
+  Req,
 } from '@nestjs/common';
 import { AdminService } from '../services/admin.service';
 import { Response } from 'express';
@@ -22,11 +23,16 @@ import { LoginAdminDto } from 'src/auth/dto/admin.dto';
 import { UserQueryDto } from '../dtos/user-query.dto';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { User } from 'aws-sdk/clients/budgets';
-import { ADMIN_SERVICE, IAdminService } from '../interface/admin-service.interface';
+import {
+  ADMIN_SERVICE,
+  IAdminService,
+} from '../interface/admin-service.interface';
 
 @Controller('admin')
 export class AdminController {
-  constructor(@Inject(ADMIN_SERVICE) private readonly adminService: IAdminService) {}
+  constructor(
+    @Inject(ADMIN_SERVICE) private readonly adminService: IAdminService,
+  ) {}
 
   @Post('login')
   async login(
@@ -98,7 +104,7 @@ export class AdminController {
     @Param('id') id: string,
     @Query('role') role: 'user' | 'trainer',
   ): Promise<User | Trainer> {
-   return await this.adminService.toggleBlockStatus(id, role);
-    
+    return await this.adminService.toggleBlockStatus(id, role);
   }
+
 }

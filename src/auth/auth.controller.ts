@@ -25,6 +25,11 @@ import {
   AUTH_SERVICE,
   IAuthService,
 } from './interfaces/auth-service.interface';
+import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { NotBlockedGuard } from 'src/common/guards/notBlocked.guard';
+import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -87,15 +92,15 @@ export class AuthController {
 
   @Post('refresh/token')
   async refreshToken(@Req() req: Request, @Res() res: Response) {
-    console.log('redirected to refresh token....');
+
     const refreshToken = req.cookies['refresh_token'];
-    console.log('refreshToken', refreshToken);
+
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token missing');
     }
 
     const payload = this.jwtService.decodeToken(refreshToken);
-    console.log('payload', payload);
+
     if (!payload?.sub || !payload?.role) {
       throw new UnauthorizedException('Invalid refresh token payload');
     }
@@ -149,4 +154,28 @@ export class AuthController {
       `http://localhost:4200/auth/callback?user=${encodeURIComponent(JSON.stringify(user))}`,
     );
   }
+
+  @Post('logout')
+@UseGuards(JwtAuthGuard, RolesGuard)
+async logOut(
+  @GetUser() user: TokenPayload, 
+  @Res() res: Response
+): Promise<void> {
+ 
+
+  res.clearCookie('access_token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+  });
+
+  res.clearCookie('refresh_token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+  });
+
+  res.status(200).json({ message: 'Logged out successfully', role: user.role });
+}
+
 }

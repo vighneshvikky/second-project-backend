@@ -119,7 +119,7 @@ export class AuthService implements IAuthService {
     const userId = payload.sub;
 
     const hashedPassword = await PasswordUtil.hashPassword(password);
-    console.log('hashe', hashedPassword);
+
     if (role === 'trainer') {
       await this.trainerService.updatePassword(userId, hashedPassword);
     } else {
