@@ -51,4 +51,7 @@ export class UpdateUserDto {
   @IsArray()
   @IsString({ each: true })
   equipments?: string[];
+
+   @IsOptional()
+  image?: string;
 }

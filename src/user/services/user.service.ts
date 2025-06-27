@@ -41,6 +41,7 @@ export class UserService {
     return await this.userRepo.updateById(userId, {
       ...data,
       isVerified: true,
+      image: data.image
     });
   }
 
