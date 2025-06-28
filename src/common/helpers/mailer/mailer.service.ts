@@ -30,25 +30,25 @@ export class MailService implements IMailService{
   }
 
 
-
-  async sendMail(email: string, data: 'accept' | 'reject'): Promise<void> {
-  const subject = data === 'accept' ? 'Trainer Approval' : 'Trainer Rejection';
+async sendMail(email: string, type: 'accept' | 'reject', url: string): Promise<void> {
+  const subject = type === 'accept' ? 'Trainer Approval' : 'Trainer Rejection';
   const message =
-    data === 'accept'
-      ? `<p>Congratulations! Your trainer account has been approved.</p>`
-      : `<p>We regret to inform you that your trainer account has been rejected.</p>`;
+    type === 'accept'
+      ? `<p>Congratulations! Your trainer account has been approved. You can now log in <a href="${url}">here</a>.</p>`
+      : `<p>We regret to inform you that your trainer account has been rejected. You may view the reason afer login and from there you can resumit the form from  <a href="${url}">here</a>.</p>`;
 
   await this.mailerService.sendMail({
     to: email,
     subject,
     text: '', 
     html: `
-      <div>
+      <div style="font-family: Arial, sans-serif; line-height: 1.5;">
         <h2>${subject}</h2>
         ${message}
       </div>
     `,
   });
 }
+
 
 }

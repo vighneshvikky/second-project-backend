@@ -28,7 +28,7 @@ interface GetUsersOptions {
 export class AdminService implements IAdminService {
   private readonly adminEmail = process.env.ADMIN_EMAIL!;
   private readonly adminPassword = process.env.ADMIN_PASSWORD!;
-
+    private url = 'http://localhost:4200/auth/login?role=trainer'
   constructor(
     @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
@@ -152,7 +152,7 @@ export class AdminService implements IAdminService {
       verifiedAt: new Date(),
     });
 
-    await this.mailService.sendMail(trainer.email, 'accept');
+    await this.mailService.sendMail(trainer.email, 'accept', this.url);
 
     return trainer;
   }
@@ -164,7 +164,8 @@ export class AdminService implements IAdminService {
       rejectionReason: reason,
       rejectedAt: new Date(),
     });
-    await this.mailService.sendMail(trainer.email, 'reject');
+        
+    await this.mailService.sendMail(trainer.email, 'reject', this.url);
     return trainer;
   }
 

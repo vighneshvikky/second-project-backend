@@ -80,6 +80,7 @@ export class AdminController {
   @Roles('admin')
   @Patch('verify-trainer/:trainerId')
   async approveTrainer(@Param('trainerId') trainerId: string) {
+
     return this.adminService.approveTrainer(trainerId);
   }
 

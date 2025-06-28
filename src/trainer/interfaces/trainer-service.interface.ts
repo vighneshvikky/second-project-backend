@@ -1,3 +1,4 @@
+import { CreateTrainerProfileDto } from '../dtos/create-trainer.dto';
 import { UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { Trainer } from '../schemas/trainer.schema';
 
@@ -11,7 +12,7 @@ export interface ITrainerService {
     name: string;
     email: string;
     phoneNumber: string;
-    specialization: string[];
+    specialization: string;
     experience: number;
     bio: string;
     idProofUrl: string;
@@ -20,4 +21,6 @@ export interface ITrainerService {
   }): Promise<Trainer>;
   findById(id: string): Promise<Trainer | null>;
   updateTrainerProfile(trainerId: string, dto: UpdateTrainerProfileDto): Promise<Trainer>;
+
+
 }

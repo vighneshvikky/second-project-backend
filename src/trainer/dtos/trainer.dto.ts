@@ -1,8 +1,23 @@
-import { IsEmail, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, Matches, MaxLength, Min } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  IsEmail,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  IsNumber,
+  ValidateNested,
+  IsIn,
+} from "class-validator";
 
+class PricingDto {
+  @IsNumber()
+    @IsOptional()
+  oneToOneSession?: number;
 
-
-
+  @IsNumber()
+    @IsOptional()
+  workoutPlan?: number;
+}
 
 export class UpdateTrainerProfileDto {
   @IsOptional()
@@ -14,6 +29,7 @@ export class UpdateTrainerProfileDto {
   email?: string;
 
   @IsOptional()
+  @IsPhoneNumber('IN')
   phoneNumber?: string;
 
   @IsOptional()
@@ -24,16 +40,28 @@ export class UpdateTrainerProfileDto {
   @IsNumber()
   experience?: number;
 
-  @IsOptional()
-  @IsString()
-  specialization?: string[];
+    @IsOptional()
+    @IsIn(['pending', 'approved', 'rejected', 'requested'])
+  verificationStatus?: 'pending' | 'approved' | 'rejected' | 'requested';
 
   @IsOptional()
   @IsString()
-  certification?: string; 
+  category?: string; // ✅ Added since it's part of your input DTO
 
   @IsOptional()
   @IsString()
-  idProof?: string; 
+  specialization?: string;
+
+  @IsOptional()
+  @IsString()
+  certificationUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  idProofUrl?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PricingDto)
+  pricing?: PricingDto;
 }
-
