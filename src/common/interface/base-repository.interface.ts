@@ -18,12 +18,12 @@ export interface PaginatedResult<T> {
 export interface IBaseRepository<T> {
   create(data: Partial<T>): Promise<T>;
   findById(id: string): Promise<T | null>;
-  findAll(filter?: Record<string, any>): Promise<T[]>;
+  findAll(filter?: Record<string, unknown>): Promise<T[]>;
   find(filter: FilterQuery<T>): Promise<T[]>;
   findByEmail(email: string): Promise<T | null>;
   deleteById(id: string): Promise<void>;
   findPaginated(
-    query: Record<string, any>,
+    query: Record<string, unknown>,
     options: PaginationOptions,
   ): Promise<PaginatedResult<T>>;
   updateById(id: string, update: Partial<T>): Promise<T>;

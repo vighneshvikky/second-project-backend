@@ -5,14 +5,14 @@ import { UpdateUserDto } from '../dtos/user.dto';
 import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 
-
-export interface FindApprovedTrainerQuery {
-  role: 'trainer';
-  verificationStatus: 'pending' | 'approved' | 'rejected' | 'requested';
+type FindApprovedTrainerQuery = Record<string, unknown> & {
+  role: string;
+  verificationStatus: string;
   isBlocked: boolean;
   category?: string;
-  name?: string | { $regex: string; $options: string };
-}
+  name?: unknown; 
+};
+
 
 @Injectable()
 export class UserService {

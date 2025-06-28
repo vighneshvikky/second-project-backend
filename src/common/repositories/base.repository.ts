@@ -16,11 +16,11 @@ find(filter: FilterQuery<T>): Promise<T[]> {
     return this.model.findById(id).exec();
   }
 
-  async findAll(filter?: Record<string, any>): Promise<T[]> {
+  async findAll(filter?: Record<string, unknown>): Promise<T[]> {
     return this.model.find(filter || {}).exec();
   }
 
-  async findOne(filter: Record<string, any>): Promise<T | null> {
+  async findOne(filter: Record<string, unknown>): Promise<T | null> {
     return this.model.findOne(filter).exec();
   }
 
@@ -32,11 +32,11 @@ find(filter: FilterQuery<T>): Promise<T[]> {
     await this.model.findByIdAndDelete(id).exec();
   }
 
-  async search(query: Record<string, any>): Promise<T[]> {
+  async search(query: Record<string, unknown>): Promise<T[]> {
     return this.model.find(query).exec();
   }
 
-  async findPaginated(query: Record<string, any>, options: PaginationOptions): Promise<PaginatedResult<T>> {
+  async findPaginated(query: Record<string, unknown>, options: PaginationOptions): Promise<PaginatedResult<T>> {
     const skip = (options.page - 1) * options.limit;
     
     const [data, total] = await Promise.all([

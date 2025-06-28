@@ -1,3 +1,4 @@
+import { UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { Trainer } from '../schemas/trainer.schema';
 
 export const TRAINER_SERVICE = 'TRAINER_SERVICE'
@@ -18,5 +19,5 @@ export interface ITrainerService {
     verificationStatus: string;
   }): Promise<Trainer>;
   findById(id: string): Promise<Trainer | null>;
-  updateTrainerProfile(trainerId: string, dto: any): Promise<Trainer>;
+  updateTrainerProfile(trainerId: string, dto: UpdateTrainerProfileDto): Promise<Trainer>;
 }

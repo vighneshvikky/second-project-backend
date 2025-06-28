@@ -7,6 +7,7 @@ import {
   AWS_S3_SERVICE,
   IAwsS3Service,
 } from 'src/common/aws/interface/aws-s3-service.interface';
+import { UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 
 @Injectable()
 export class TrainerService implements ITrainerService {
@@ -48,7 +49,7 @@ export class TrainerService implements ITrainerService {
     return this.trainerRepo.findById(id);
   }
 
-  async updateTrainerProfile(trainerId: string, dto: any) {
+  async updateTrainerProfile(trainerId: string, dto: UpdateTrainerProfileDto) {
     const trainer = await this.trainerRepo.findById(trainerId);
     if (!trainer) {
       throw new NotFoundException('Trainer not found');

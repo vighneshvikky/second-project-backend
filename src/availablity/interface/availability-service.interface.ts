@@ -7,8 +7,8 @@ export const AVAILABILITY_SERVICE = 'AVAILABILITY_SERVICE';
 
 export interface IAvailabilityService {
   createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto): Promise<Availability>;
-  getTrainerAvailability(trainerId: string): Promise<any>;
-  getTrainerAvailabilityBasedonDate(trainerId: string, date: string): Promise<any>;
+  getTrainerAvailability(trainerId: string): Promise<Availability[]>;
+  getTrainerAvailabilityBasedonDate(trainerId: string, date: string): Promise<Availability | null>;
 }
 
 

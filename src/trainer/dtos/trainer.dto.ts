@@ -14,19 +14,19 @@ export class UpdateTrainerProfileDto {
   email?: string;
 
   @IsOptional()
-  @Matches(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits' })
   phoneNumber?: string;
 
   @IsOptional()
   @IsString()
   bio?: string;
 
+  @IsOptional()
   @IsNumber()
-  experience: number;
+  experience?: number;
 
   @IsOptional()
   @IsString()
-  specialization?: string;
+  specialization?: string[];
 
   @IsOptional()
   @IsString()

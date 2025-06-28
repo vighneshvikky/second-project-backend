@@ -6,6 +6,7 @@ import {
 import { CreateAvailabilityDto } from '../dto/availablity.dto';
 import * as dayjs from 'dayjs';
 import { IAvailabilityService } from '../interface/availability-service.interface';
+import { Availability } from '../schemas/availablity.schema';
 
 
 @Injectable()
@@ -57,11 +58,11 @@ async createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto) 
 }
 
 
-  getTrainerAvailability(trainerId: string) {
+  getTrainerAvailability(trainerId: string): Promise<Availability[]> {
     return this.availabilityRepo.getAllForTrainer(trainerId);
   }
 
-  getTrainerAvailabilityBasedonDate(traineId: string, date: string) {
+  getTrainerAvailabilityBasedonDate(traineId: string, date: string): Promise<Availability | null> {
   
     return this.availabilityRepo.findByTrainerAndDate(traineId, date)
   }
