@@ -8,7 +8,6 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { PasswordUtil } from 'src/common/helpers/password.util';
 import Redis from 'ioredis';
-import { MailService } from 'src/common/helpers/mailer/mailer.service';
 import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
 import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
@@ -28,6 +27,8 @@ import {
   MAIL_SERVICE,
 } from 'src/common/helpers/mailer/mail-service.interface';
 import { IAuthService } from './interfaces/auth-service.interface';
+import { AUTH_SERVICE_REGISTRY } from './interfaces/auth-service-registry.interface';
+import { UserRoleServiceRegistry } from 'src/common/services/user-role-service.registry';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -37,6 +38,8 @@ export class AuthService implements IAuthService {
     @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
     @Inject(MAIL_SERVICE) private readonly mailService: IMailService,
     @Inject(IUserRepository) private readonly userRepo: IUserRepository,
+    @Inject(AUTH_SERVICE_REGISTRY)
+    private readonly roleServiceRegistry: UserRoleServiceRegistry,
     @Inject(ITrainerRepository)
     private readonly trainerRepo: ITrainerRepository,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
@@ -45,36 +48,41 @@ export class AuthService implements IAuthService {
   private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
   async verifyLogin(body: LoginDto) {
-    let user;
     const refreshTokenTTL = 7 * 24 * 60 * 60;
-    if (body.role === 'trainer') {
-      user = await this.trainerService.findByEmail(body.email);
-    } else {
-      user = await this.userService.findByEmail(body.email);
-    }
 
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
+    const userService = this.roleServiceRegistry.getServiceByRole(body.role);
+    const user = await userService.findByEmail(body.email);
 
-    if (!(await PasswordUtil.comparePassword(body.password, user.password))) {
-      console.log('validation successfully');
+    if (
+      !user ||
+      typeof user.password !== 'string' ||
+      typeof user._id === 'undefined'
+    ) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    const isValid = await PasswordUtil.comparePassword(
+      body.password,
+      user.password,
+    );
+
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const userId = user.id.toString();
     const accessToken = this.jwtService.signAccessToken({
-      sub: user._id,
+      sub: userId,
       role: user.role,
       isBlocked: false,
     });
     const refreshToken = this.jwtService.signRefreshToken({
-      sub: user._id,
+      sub: userId,
       role: user.role,
       isBlocked: false,
     });
     await this.redis.set(
       refreshToken,
-      user._id.toString(),
+      user.id.toString(),
       'EX',
       refreshTokenTTL,
     );
@@ -83,10 +91,9 @@ export class AuthService implements IAuthService {
   }
 
   async initiatePasswordReset(email: string, role: string) {
-    const user =
-      role === 'trainer'
-        ? await this.trainerService.findByEmail(email)
-        : await this.userService.findByEmail(email);
+
+    const userService = this.roleServiceRegistry.getServiceByRole(role);
+    const user = await userService.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -109,7 +116,7 @@ export class AuthService implements IAuthService {
   }
 
   async resetPassword(token: string, role: string, password: string) {
-    console.log('rold befor sem', role);
+ 
     if (!password) {
       throw new BadRequestException('Password is required');
     }
@@ -120,11 +127,11 @@ export class AuthService implements IAuthService {
 
     const hashedPassword = await PasswordUtil.hashPassword(password);
 
-    if (role === 'trainer') {
-      await this.trainerService.updatePassword(userId, hashedPassword);
-    } else {
-      await this.userService.updatePassword(userId, hashedPassword);
-    }
+    
+    const userService = this.roleServiceRegistry.getServiceByRole(role);
+     await userService.updatePassword(userId, hashedPassword);
+
+
     return {
       message: 'Password has been reset successfully',
       data: { role },
@@ -136,7 +143,6 @@ export class AuthService implements IAuthService {
     role: 'user' | 'trainer' | 'admin',
   ): Promise<{ accessToken: string; newRefreshToken: string }> {
     const userId = await this.redis.get(oldToken);
-    console.log('userId', userId);
     if (!userId) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }

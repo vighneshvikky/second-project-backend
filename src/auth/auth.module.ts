@@ -17,7 +17,8 @@ import { OtpService } from './services/otp/otp.service';
 import { MAIL_SERVICE } from 'src/common/helpers/mailer/mail-service.interface';
 import { MailService } from 'src/common/helpers/mailer/mailer.service';
 import { AUTH_SERVICE } from './interfaces/auth-service.interface';
-
+import { UserRoleServiceRegistry } from 'src/common/services/user-role-service.registry';
+import { AUTH_SERVICE_REGISTRY } from './interfaces/auth-service-registry.interface';
 
 @Module({
   imports: [
@@ -38,20 +39,25 @@ import { AUTH_SERVICE } from './interfaces/auth-service.interface';
     UserSignUpStrategy,
     {
       provide: AUTH_SERVICE,
-      useClass: AuthService
+      useClass: AuthService,
     },
     {
       provide: IJwtTokenService,
-      useClass: JwtTokenService
-    },{
+      useClass: JwtTokenService,
+    },
+    {
       provide: OTP_SERVICE,
-      useClass: OtpService
-    },{
+      useClass: OtpService,
+    },
+    {
       provide: MAIL_SERVICE,
-      useClass: MailService
-    }
-  
+      useClass: MailService,
+    },
+    {
+      provide: AUTH_SERVICE_REGISTRY,
+      useClass:UserRoleServiceRegistry,
+    },
   ],
-  exports: [IJwtTokenService]
+  exports: [IJwtTokenService],
 })
 export class AuthModule {}

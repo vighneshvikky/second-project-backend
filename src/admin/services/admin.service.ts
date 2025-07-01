@@ -141,7 +141,7 @@ export class AdminService implements IAdminService {
     page = 1,
     limit = 10,
   }: GetUsersOptions): Promise<PaginatedResult<Trainer>> {
-    const query = { isVerified: false };
+    const query = { isVerified: false , verificationStatus: 'pending'};
     return this.trainerRepository.findPaginated(query, { page, limit });
   }
 

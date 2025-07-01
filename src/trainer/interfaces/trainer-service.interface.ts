@@ -1,12 +1,11 @@
+import { IUserRoleService } from 'src/common/interface/user-role-service.interface';
 import { CreateTrainerProfileDto } from '../dtos/create-trainer.dto';
 import { UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { Trainer } from '../schemas/trainer.schema';
 
 export const TRAINER_SERVICE = 'TRAINER_SERVICE'
 
-export interface ITrainerService {
-  findByEmail(email: string): Promise<Trainer | null>;
-  updatePassword(userId: string, newPassword: string): Promise<void>;
+export interface ITrainerService extends IUserRoleService{
   create(payload: Partial<Trainer>): Promise<Trainer>;
   createTrainerWithFiles(data: {
     name: string;
@@ -19,7 +18,6 @@ export interface ITrainerService {
     certificationUrl: string;
     verificationStatus: string;
   }): Promise<Trainer>;
-  findById(id: string): Promise<Trainer | null>;
   updateTrainerProfile(trainerId: string, dto: UpdateTrainerProfileDto): Promise<Trainer>;
 
 
