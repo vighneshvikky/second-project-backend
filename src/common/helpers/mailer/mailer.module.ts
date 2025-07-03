@@ -10,8 +10,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        console.log('MAIL_USER:', config.get('MAIL_USER'));
-        console.log('MAIL_PASS:', config.get('MAIL_PASS'));
         return {
           transport: {
             service: 'gmail',

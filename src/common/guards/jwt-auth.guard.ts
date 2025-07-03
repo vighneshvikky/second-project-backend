@@ -37,7 +37,7 @@ export class JwtAuthGuard implements CanActivate {
       request['user'] = payload;
       return true;
     } catch (err) {
-       console.error('❌ JWT verification failed:', err); 
+   
       if (err instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedException('Access token expired');
       }

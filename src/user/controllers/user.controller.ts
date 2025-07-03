@@ -38,7 +38,6 @@ export class UserController {
     @Query('category') category?: string,
     @Query('name') name?: string,
   ): Promise<Trainer[]> {
-    console.log('category', category);
 
     return await this.userService.findApprovedTrainer({ category, name });
   }

@@ -61,7 +61,7 @@ export class AuthController {
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('user body', body);
+
     const { accessToken, refreshToken, user } =
       await this.authService.verifyLogin(body);
 
@@ -86,7 +86,7 @@ export class AuthController {
       dto.role,
       dto.newPassword,
     );
-    console.log('data', data);
+    
     return data;
   }
 
@@ -118,7 +118,7 @@ export class AuthController {
 
   @Get('google/redirect')
   redirectGoogle(@Query('role') role: string, @Res() res: Response) {
-    console.log('Redirect URI:', process.env.GOOGLE_REDIRECT_URI);
+   
 
     const redirectUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
     redirectUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID!);

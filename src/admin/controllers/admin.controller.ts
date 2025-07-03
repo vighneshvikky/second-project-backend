@@ -44,8 +44,7 @@ export class AdminController {
         loginDto.email,
         loginDto.password,
       );
-    console.log('accessToken', accessToken);
-    console.log('refreshToken', refreshToken);
+
     setTokenCookies(response, accessToken, refreshToken);
     return {
       message: 'Admin login successful',

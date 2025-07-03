@@ -69,7 +69,7 @@ export class OtpService implements IOtpService{
 
     await this.redis.del(`otp:${data.email}`);
     await this.redis.del(userKey);
-    console.log(data.role);
+
 
     return {
       message: 'Account Created Successfully',
