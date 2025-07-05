@@ -6,7 +6,6 @@ export interface IAvailabilityRepository {
   create(data: Partial<Availability>): Promise<Availability>;
   findById(id: string): Promise<Availability | null>;
 
-
   findByTrainerAndDate(
     trainerId: string,
     date: string,
@@ -17,4 +16,5 @@ export interface IAvailabilityRepository {
     slots: { start: string; end: string }[],
   ): Promise<Availability>;
   getAllForTrainer(trainerId: string): Promise<Availability[]>;
+  getDefaultSlotsForTrainer(trainerId: string): Promise<Availability[]>;
 }

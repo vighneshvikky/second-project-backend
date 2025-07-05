@@ -1,4 +1,11 @@
-import { IsArray, IsDateString, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class TimeSlotDto {
@@ -7,6 +14,14 @@ export class TimeSlotDto {
 
   @IsString()
   end: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isDefault?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }
 
 export class CreateAvailabilityDto {

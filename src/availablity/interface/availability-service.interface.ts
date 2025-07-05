@@ -9,6 +9,8 @@ export interface IAvailabilityService {
   createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto): Promise<Availability>;
   getTrainerAvailability(trainerId: string): Promise<Availability[]>;
   getTrainerAvailabilityBasedonDate(trainerId: string, date: string): Promise<Availability | null>;
+  getDefaultSlotsForTrainer(trainerId: string): Promise<Availability[]>;
+
 }
 
 

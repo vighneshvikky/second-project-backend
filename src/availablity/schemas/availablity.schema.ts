@@ -11,13 +11,15 @@ export class Availability extends Document {
   trainerId: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, required: true })
-  date:String;
+  date: String;
 
   @Prop({
     type: [
       {
         start: { type: String, required: true },
         end: { type: String, required: true },
+        isDefault: { type: Boolean, default: false },
+        isActive: { type: Boolean, default: true },
       },
     ],
     required: true,
@@ -25,6 +27,8 @@ export class Availability extends Document {
   slots: {
     start: string;
     end: string;
+    isDefault?: boolean;
+    isActive?: boolean;
   }[];
 }
 

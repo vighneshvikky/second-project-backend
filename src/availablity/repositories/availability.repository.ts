@@ -41,12 +41,21 @@ export class AvailabilityRepository
       .findOneAndUpdate(
         { trainerId, date },
         { $set: { slots: mergedSlots } },
-        { upsert: true, new: true },
+        { upsert: true, new: true, setDefaultsOnInsert: true },
       )
+      .select('-_v')
       .exec();
   }
 
   async getAllForTrainer(trainerId: string) {
     return this.model.find({ trainerId }).exec();
   }
+
+  async getDefaultSlotsForTrainer(trainerId: string): Promise<Availability[]> {
+  return this.model.find({
+    trainerId,
+    'slots.isDefault': true,
+  }).exec();
+}
+
 }

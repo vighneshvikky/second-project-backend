@@ -66,4 +66,20 @@ async createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto) 
   
     return this.availabilityRepo.findByTrainerAndDate(traineId, date)
   }
+
+//   getDefaultSlots(): { start: string; end: string; isDefault: boolean; isActive: boolean }[] {
+//  return this.availabilityRepo
+// }
+
+async getDefaultSlotsForTrainer(trainerId: string): Promise<Availability[]> {
+  const results = await this.availabilityRepo.getDefaultSlotsForTrainer(trainerId);
+    
+  // Filter to return only default slots
+  return results.map(entry => ({
+    ...entry.toObject(),
+    slots: entry.slots.filter(slot => slot.isDefault),
+  }));
+}
+
+
 }

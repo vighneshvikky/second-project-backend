@@ -15,6 +15,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { AVAILABILITY_SERVICE, IAvailabilityService } from '../interface/availability-service.interface';
+import { Availability } from '../schemas/availablity.schema';
 
 @Controller('availability')
 export class AvailabilityController {
@@ -27,17 +28,20 @@ export class AvailabilityController {
 @Roles('trainer')
 async setAvailability(
   @GetUser('sub') trainerId: string,
-  @Body() createAvailabilityDto: CreateAvailabilityDto,
+  @Body() createAvailabilityDto: any,
 ) {
   console.log('data', createAvailabilityDto)
   const data = await this.availabilityService.createOrUpdateAvailability(
     trainerId,
     createAvailabilityDto
   );
-
-  console.log('data', data);
-  data;
+ return  data;
 }
+
+  @Get('default-slots')
+  async getDefaultSlots(@GetUser('sub') trainerId: string): Promise<Availability[]> {
+    return this.availabilityService.getDefaultSlotsForTrainer(trainerId);
+  }
 
 
 
