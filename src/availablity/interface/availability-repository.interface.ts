@@ -1,8 +1,9 @@
+import { IBaseRepository } from 'src/common/interface/base-repository.interface';
 import { Availability } from '../schemas/availablity.schema';
 
 export const AVAILABILITY_REPOSITORY = Symbol('AVAILABILITY_REPOSITORY');
 
-export interface IAvailabilityRepository {
+export interface IAvailabilityRepository extends IBaseRepository<Availability>{
   create(data: Partial<Availability>): Promise<Availability>;
   findById(id: string): Promise<Availability | null>;
 
