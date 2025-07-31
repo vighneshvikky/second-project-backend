@@ -3,7 +3,7 @@ import { Trainer } from '../schemas/trainer.schema';
 
 export const ITrainerRepository = Symbol('ITrainerRepository');
 
-export interface ITrainerRepository extends IBaseRepository<Trainer>{
+export interface ITrainerRepository extends IBaseRepository<Trainer> {
   createTrainerWithFiles(data: {
     name: string;
     email: string;

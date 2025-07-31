@@ -22,7 +22,7 @@ import { AWS_S3_SERVICE } from 'src/common/aws/interface/aws-s3-service.interfac
       },
     ]),
     JwtModule.register({}),
-    forwardRef(() => UserModule)
+    forwardRef(() => UserModule),
   ],
   controllers: [TrainerController],
   providers: [
@@ -37,11 +37,11 @@ import { AWS_S3_SERVICE } from 'src/common/aws/interface/aws-s3-service.interfac
     },
     {
       provide: TRAINER_SERVICE,
-      useClass: TrainerService
+      useClass: TrainerService,
     },
     {
       provide: AWS_S3_SERVICE,
-      useClass: AwsS3Service
+      useClass: AwsS3Service,
     },
   ],
   exports: [

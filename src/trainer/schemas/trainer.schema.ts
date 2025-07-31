@@ -18,7 +18,7 @@ export class Trainer extends BaseModel {
   @Prop({ enum: ['Cardio', 'Strength', 'Yoga', 'Nutrition'] })
   category?: string;
 
-  @Prop({ type: String})
+  @Prop({ type: String })
   specialization?: string;
 
   @Prop()

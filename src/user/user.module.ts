@@ -15,8 +15,8 @@ import { USER_SERVICE } from './interfaces/user-service.interface';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-     JwtModule.register({}),
-     TrainerModule
+    JwtModule.register({}),
+    TrainerModule,
   ],
   controllers: [UserController],
   providers: [
@@ -31,8 +31,8 @@ import { USER_SERVICE } from './interfaces/user-service.interface';
     UserRepository,
     {
       provide: USER_SERVICE,
-      useClass: UserService
-    }
+      useClass: UserService,
+    },
   ],
   exports: [
     { provide: IUserRepository, useClass: UserRepository },

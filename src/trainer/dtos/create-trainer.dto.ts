@@ -1,5 +1,15 @@
-import { Type } from "class-transformer";
-import { IsEmail, IsIn, IsNumber, IsPhoneNumber, IsString, ValidateNested } from "class-validator";
+import { Type } from 'class-transformer';
+import {
+  IsDefined,
+  IsEmail,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+
 class PricingDto {
   @IsNumber()
   oneToOneSession: number;
@@ -10,6 +20,7 @@ class PricingDto {
 
 export class CreateTrainerProfileDto {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsEmail()

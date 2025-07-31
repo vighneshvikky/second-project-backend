@@ -10,7 +10,6 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { SignUpStrategyResolver } from './strategies/signup-strategy.resolver';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { LoginDto } from './dto/login.dto';
@@ -28,23 +27,18 @@ import {
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
-import { NotBlockedGuard } from 'src/common/guards/notBlocked.guard';
 import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    readonly signupStratergyResolver: SignUpStrategyResolver,
     @Inject(OTP_SERVICE) private readonly otpService: IOtpService,
     @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
     @Inject(IJwtTokenService) private readonly jwtService: IJwtTokenService,
   ) {}
   @Post('signup')
   async signUp(@Body() body: SignupDto) {
-    const stratergy = this.signupStratergyResolver.resolve(body.role);
-
-    const otpSuccess = await stratergy.signUp(body);
-    return otpSuccess;
+    return this.authService.signUp(body);
   }
   @Post('verify-otp')
   async verifyOtp(@Body() body: VerifyOtpDto) {
@@ -61,7 +55,6 @@ export class AuthController {
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-
     const { accessToken, refreshToken, user } =
       await this.authService.verifyLogin(body);
 
@@ -86,15 +79,14 @@ export class AuthController {
       dto.role,
       dto.newPassword,
     );
-    
+
     return data;
   }
 
   @Post('refresh/token')
   async refreshToken(@Req() req: Request, @Res() res: Response) {
-
     const refreshToken = req.cookies['refresh_token'];
-
+   console.log('refresh tokenn', refreshToken);
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token missing');
     }
@@ -118,8 +110,6 @@ export class AuthController {
 
   @Get('google/redirect')
   redirectGoogle(@Query('role') role: string, @Res() res: Response) {
-   
-
     const redirectUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
     redirectUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID!);
     redirectUrl.searchParams.set(
@@ -156,26 +146,26 @@ export class AuthController {
   }
 
   @Post('logout')
-@UseGuards(JwtAuthGuard, RolesGuard)
-async logOut(
-  @GetUser() user: TokenPayload, 
-  @Res() res: Response
-): Promise<void> {
- 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+  async logOut(
+     @GetUser() user: TokenPayload,
+    @Res() res: Response,
+  ): Promise<void> {
 
-  res.clearCookie('access_token', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-  });
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
 
-  res.clearCookie('refresh_token', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-  });
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
 
-  res.status(200).json({ message: 'Logged out successfully', role: user.role });
-}
-
+    res
+      .status(200)
+      .json({ message: 'Logged out successfully', role: user.role });
+  }
 }

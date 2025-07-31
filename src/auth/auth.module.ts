@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
-import { SignUpStrategyResolver } from './strategies/signup-strategy.resolver';
-import { TrainerSignUpStrategy } from './strategies/trainer-signup.strategy';
-import { UserSignUpStrategy } from './strategies/user-signup.strategy';
 import { TrainerModule } from 'src/trainer/trainer.module';
 import { RedisModule } from 'src/redis.module';
 import { OtpModule } from './services/otp/otp.module';
@@ -19,6 +16,8 @@ import { MailService } from 'src/common/helpers/mailer/mailer.service';
 import { AUTH_SERVICE } from './interfaces/auth-service.interface';
 import { UserRoleServiceRegistry } from 'src/common/services/user-role-service.registry';
 import { AUTH_SERVICE_REGISTRY } from './interfaces/auth-service-registry.interface';
+import { PASSWORD_UTIL } from 'src/common/interface/IPasswordUtil.interface';
+import { PasswordUtil } from 'src/common/helpers/password.util';
 
 @Module({
   imports: [
@@ -34,9 +33,6 @@ import { AUTH_SERVICE_REGISTRY } from './interfaces/auth-service-registry.interf
   ],
   controllers: [AuthController],
   providers: [
-    SignUpStrategyResolver,
-    TrainerSignUpStrategy,
-    UserSignUpStrategy,
     {
       provide: AUTH_SERVICE,
       useClass: AuthService,
@@ -55,7 +51,11 @@ import { AUTH_SERVICE_REGISTRY } from './interfaces/auth-service-registry.interf
     },
     {
       provide: AUTH_SERVICE_REGISTRY,
-      useClass:UserRoleServiceRegistry,
+      useClass: UserRoleServiceRegistry,
+    },
+    {
+      provide: PASSWORD_UTIL,
+      useClass: PasswordUtil,
     },
   ],
   exports: [IJwtTokenService],

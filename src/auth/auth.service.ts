@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -29,6 +31,9 @@ import {
 import { IAuthService } from './interfaces/auth-service.interface';
 import { AUTH_SERVICE_REGISTRY } from './interfaces/auth-service-registry.interface';
 import { UserRoleServiceRegistry } from 'src/common/services/user-role-service.registry';
+import { IOtpService, OTP_SERVICE } from './interfaces/otp-service.interface';
+import { SignupDto } from './dto/auth.dto';
+import { IPasswordUtil, PASSWORD_UTIL } from 'src/common/interface/IPasswordUtil.interface';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -43,13 +48,50 @@ export class AuthService implements IAuthService {
     @Inject(ITrainerRepository)
     private readonly trainerRepo: ITrainerRepository,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
+    @Inject(OTP_SERVICE) private readonly otpService: IOtpService,
+    @Inject(PASSWORD_UTIL) private readonly passwordUtil: IPasswordUtil
   ) {}
 
   private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  private readonly logger = new Logger(AuthService.name);
+
+  async signUp(data: SignupDto) {
+    const { role, email, password } = data;
+
+    const userRepo = role === 'trainer' ? this.trainerRepo : this.userRepo;
+
+    const existing = await userRepo.findByEmail(email);
+    if (existing) {
+      throw new ConflictException('User already exists');
+    }
+
+    const hashPassword = await this.passwordUtil.hashPassword(password);
+
+    const tempUser = {
+      ...data,
+      password: hashPassword,
+    };
+
+    await this.redis.set(
+      `temp_${role}:${email}`,
+      JSON.stringify(tempUser),
+      'EX',
+      300,
+    );
+
+    const otp = await this.otpService.generateOtp(email);
+    await this.mailService.sendOtp(email, otp);
+
+    return {
+      message: 'OTP sent to your email',
+      data: {
+        email,
+        role,
+      },  
+    };
+  }
 
   async verifyLogin(body: LoginDto) {
-    const refreshTokenTTL = 7 * 24 * 60 * 60;
-
     const userService = this.roleServiceRegistry.getServiceByRole(body.role);
     const user = await userService.findByEmail(body.email);
 
@@ -80,18 +122,11 @@ export class AuthService implements IAuthService {
       role: user.role,
       isBlocked: false,
     });
-    await this.redis.set(
-      refreshToken,
-      user.id.toString(),
-      'EX',
-      refreshTokenTTL,
-    );
 
     return { accessToken, refreshToken, user };
   }
 
   async initiatePasswordReset(email: string, role: string) {
-
     const userService = this.roleServiceRegistry.getServiceByRole(role);
     const user = await userService.findByEmail(email);
 
@@ -116,7 +151,6 @@ export class AuthService implements IAuthService {
   }
 
   async resetPassword(token: string, role: string, password: string) {
- 
     if (!password) {
       throw new BadRequestException('Password is required');
     }
@@ -127,10 +161,8 @@ export class AuthService implements IAuthService {
 
     const hashedPassword = await PasswordUtil.hashPassword(password);
 
-    
     const userService = this.roleServiceRegistry.getServiceByRole(role);
-     await userService.updatePassword(userId, hashedPassword);
-
+    await userService.updatePassword(userId, hashedPassword);
 
     return {
       message: 'Password has been reset successfully',
@@ -147,8 +179,6 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    await this.redis.del(oldToken);
-
     const accessToken = this.jwtService.signAccessToken({
       sub: userId,
       role: role,
@@ -160,8 +190,6 @@ export class AuthService implements IAuthService {
       role,
       isBlocked: false,
     });
-
-    await this.redis.set(newRefreshToken, userId, 'EX', 7 * 24 * 60 * 60);
 
     return { accessToken, newRefreshToken };
   }

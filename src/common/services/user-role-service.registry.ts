@@ -1,12 +1,19 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { IUserRoleService } from "../interface/user-role-service.interface";
-import { IUserService, USER_SERVICE } from "src/user/interfaces/user-service.interface";
-import { ITrainerService, TRAINER_SERVICE } from "src/trainer/interfaces/trainer-service.interface";
-import { IAuthServiceRegistry } from "src/auth/interfaces/auth-service-registry.interface";
-
+import { Inject, Injectable } from '@nestjs/common';
+import { IUserRoleService } from '../interface/user-role-service.interface';
+import {
+  IUserService,
+  USER_SERVICE,
+} from 'src/user/interfaces/user-service.interface';
+import {
+  ITrainerService,
+  TRAINER_SERVICE,
+} from 'src/trainer/interfaces/trainer-service.interface';
+import { IAuthServiceRegistry } from 'src/auth/interfaces/auth-service-registry.interface';
+import { ITrainerRepository } from 'src/trainer/interfaces/trainer-repository.interface';
+import { IUserRepository } from 'src/user/interfaces/user-repository.interface';
 
 @Injectable()
-export class UserRoleServiceRegistry implements IAuthServiceRegistry{
+export class UserRoleServiceRegistry implements IAuthServiceRegistry {
   private readonly services: Map<string, IUserRoleService>;
 
   constructor(
@@ -26,4 +33,9 @@ export class UserRoleServiceRegistry implements IAuthServiceRegistry{
     }
     return service;
   }
+ 
+  // getRepository(role: string): IUserRepository | ITrainerRepository {
+  //   if()
+  // }
+  
 }

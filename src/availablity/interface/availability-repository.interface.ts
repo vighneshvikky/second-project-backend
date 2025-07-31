@@ -1,21 +1,21 @@
-import { IBaseRepository } from 'src/common/interface/base-repository.interface';
-import { Availability } from '../schemas/availablity.schema';
+// import { Types } from 'mongoose';
+// import { IAvailabilityTemplate, ITimeSlot } from '../schemas';
+// import { CreateAvailabilityDto, UpdateAvailabilityDto, CreateSpecificSlotDto } from '../dto';
 
-export const AVAILABILITY_REPOSITORY = Symbol('AVAILABILITY_REPOSITORY');
+// export interface IAvailabilityRepository {
+//   // Availability Templates
+//   createAvailability(trainerId: string, data: CreateAvailabilityDto): Promise<IAvailabilityTemplate>;
+//   findAvailabilityByTrainer(trainerId: string): Promise<IAvailabilityTemplate[]>;
+//   findAvailabilityById(id: string): Promise<IAvailabilityTemplate | null>;
+//   updateAvailability(id: string, data: UpdateAvailabilityDto): Promise<IAvailabilityTemplate | null>;
+//   deleteAvailability(id: string): Promise<boolean>;
 
-export interface IAvailabilityRepository extends IBaseRepository<Availability>{
-  create(data: Partial<Availability>): Promise<Availability>;
-  findById(id: string): Promise<Availability | null>;
-
-  findByTrainerAndDate(
-    trainerId: string,
-    date: string,
-  ): Promise<Availability | null>;
-  upsertAvailability(
-    trainerId: string,
-    date: string,
-    slots: { start: string; end: string }[],
-  ): Promise<Availability>;
-  getAllForTrainer(trainerId: string): Promise<Availability[]>;
-  getDefaultSlotsForTrainer(trainerId: string): Promise<Availability[]>;
-}
+//   // Time Slots
+//   createSpecificSlot(trainerId: string, data: CreateSpecificSlotDto): Promise<ITimeSlot>;
+//   generateSlotsFromTemplate(trainerId: string, templateId: string, startDate: Date, endDate: Date): Promise<ITimeSlot[]>;
+//   findSlotsByTrainerAndDateRange(trainerId: string, startDate: Date, endDate: Date): Promise<ITimeSlot[]>;
+//   updateSlot(id: string, data: Partial<ITimeSlot>): Promise<ITimeSlot | null>;
+//   deleteSlot(id: string): Promise<boolean>;
+//   blockSlot(id: string): Promise<ITimeSlot | null>;
+//   unblockSlot(id: string): Promise<ITimeSlot | null>;
+// }

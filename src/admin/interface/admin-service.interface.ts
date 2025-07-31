@@ -2,7 +2,9 @@ import { User } from 'src/user/schemas/user.schema';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { PaginatedResult } from 'src/common/interface/base-repository.interface';
 
-export const ADMIN_SERVICE = 'ADMIN_SERVICE'
+export const ADMIN_SERVICE = 'ADMIN_SERVICE';
+
+
 
 export interface GetUsersOptions {
   search?: string;
@@ -12,7 +14,10 @@ export interface GetUsersOptions {
 }
 
 export interface IAdminService {
-  verifyAdminLogin(email: string, password: string): Promise<{
+  verifyAdminLogin(
+    email: string,
+    password: string,
+  ): Promise<{
     accessToken: string;
     refreshToken: string;
   }>;

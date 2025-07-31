@@ -5,8 +5,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IAwsS3Service } from '../interface/aws-s3-service.interface';
 
 @Injectable()
-export class AwsS3Service implements IAwsS3Service{
-
+export class AwsS3Service implements IAwsS3Service {
   private s3 = new S3Client({
     region: process.env.AWS_REGION!,
     credentials: {
@@ -28,7 +27,7 @@ export class AwsS3Service implements IAwsS3Service{
       ContentType: contentType,
     });
 
-    const url = await getSignedUrl(this.s3, command, { expiresIn: 300 }); 
-    return { url, key }; 
+    const url = await getSignedUrl(this.s3, command, { expiresIn: 300 });
+    return { url, key };
   }
 }

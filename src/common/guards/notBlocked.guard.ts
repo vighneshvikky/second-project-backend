@@ -5,7 +5,10 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { ITrainerService, TRAINER_SERVICE } from 'src/trainer/interfaces/trainer-service.interface';
+import {
+  ITrainerService,
+  TRAINER_SERVICE,
+} from 'src/trainer/interfaces/trainer-service.interface';
 import { TrainerService } from 'src/trainer/services/trainer.service';
 import {
   IUserService,
@@ -16,7 +19,7 @@ import {
 export class NotBlockedGuard implements CanActivate {
   constructor(
     @Inject(USER_SERVICE) private readonly userService: IUserService,
-    @Inject(TRAINER_SERVICE) private readonly trainerService: ITrainerService
+    @Inject(TRAINER_SERVICE) private readonly trainerService: ITrainerService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

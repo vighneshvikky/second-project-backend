@@ -37,12 +37,12 @@ export class JwtTokenService implements IJwtTokenService {
   }
 
   verifyRefreshToken(token: string): TokenPayload {
-  const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET');
-  return this.jwt.verify(token, { secret });
-}
+    const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET');
+    return this.jwt.verify(token, { secret });
+  }
 
   decodeToken(token: string): TokenPayload | null {
-    return this.jwt.decode(token) as TokenPayload | null;
+    return this.jwt.decode(token);
   }
 
   signPasswordResetToken(payload: TokenPayload): string {

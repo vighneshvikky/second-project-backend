@@ -1,19 +1,29 @@
+import { SignupDto } from '../dto/auth.dto';
 import { LoginDto } from '../dto/login.dto';
 import { BaseModel } from 'src/common/model/base-model';
 
 export interface IAuthService {
+  signUp(body: SignupDto): Promise<{ message: string; data: { role: string } }>;
+  
   verifyLogin(body: LoginDto): Promise<{
     accessToken: string;
     refreshToken: string;
     user: BaseModel;
   }>;
 
-  initiatePasswordReset(email: string, role: string): Promise<{
+  initiatePasswordReset(
+    email: string,
+    role: string,
+  ): Promise<{
     message: string;
     data: null;
   }>;
 
-  resetPassword(token: string, role: string, password: string): Promise<{
+  resetPassword(
+    token: string,
+    role: string,
+    password: string,
+  ): Promise<{
     message: string;
     data: { role: string };
   }>;

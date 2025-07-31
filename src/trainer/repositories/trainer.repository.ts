@@ -10,7 +10,10 @@ import { BaseRepository } from '../../common/repositories/base.repository';
 import { ITrainerRepository } from '../interfaces/trainer-repository.interface';
 
 @Injectable()
-export class TrainerRepository extends BaseRepository<Trainer> implements ITrainerRepository{
+export class TrainerRepository
+  extends BaseRepository<Trainer>
+  implements ITrainerRepository
+{
   constructor(@InjectModel(Trainer.name) model: Model<Trainer>) {
     super(model);
   }

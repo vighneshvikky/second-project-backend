@@ -9,9 +9,7 @@ import {
   Param,
   UseGuards,
   Inject,
-  Req,
 } from '@nestjs/common';
-import { AdminService } from '../services/admin.service';
 import { Response } from 'express';
 import { GetUnverifiedTrainersQueryDto } from 'src/common/helpers/dtos/get-user-query.dto';
 import { BadRequestException } from '@nestjs/common';
@@ -79,7 +77,6 @@ export class AdminController {
   @Roles('admin')
   @Patch('verify-trainer/:trainerId')
   async approveTrainer(@Param('trainerId') trainerId: string) {
-
     return this.adminService.approveTrainer(trainerId);
   }
 
@@ -106,5 +103,4 @@ export class AdminController {
   ): Promise<User | Trainer> {
     return await this.adminService.toggleBlockStatus(id, role);
   }
-
 }

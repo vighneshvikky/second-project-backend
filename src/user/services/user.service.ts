@@ -10,9 +10,8 @@ type FindApprovedTrainerQuery = Record<string, unknown> & {
   verificationStatus: string;
   isBlocked: boolean;
   category?: string;
-  name?: unknown; 
+  name?: unknown;
 };
-
 
 @Injectable()
 export class UserService {
@@ -41,7 +40,7 @@ export class UserService {
     return await this.userRepo.updateById(userId, {
       ...data,
       isVerified: true,
-      image: data.image
+      image: data.image,
     });
   }
 

@@ -16,11 +16,16 @@ import { Roles } from 'src/common/decorator/role.decorator';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { NotBlockedGuard } from 'src/common/guards/notBlocked.guard';
-import { IUserService, USER_SERVICE } from '../interfaces/user-service.interface';
+import {
+  IUserService,
+  USER_SERVICE,
+} from '../interfaces/user-service.interface';
 
 @Controller('user')
 export class UserController {
-  constructor(@Inject(USER_SERVICE) private readonly userService: IUserService) {}
+  constructor(
+    @Inject(USER_SERVICE) private readonly userService: IUserService,
+  ) {}
   @UseGuards(JwtAuthGuard, RolesGuard, NotBlockedGuard)
   @Roles('user')
   @Patch('update-profile')
@@ -38,7 +43,6 @@ export class UserController {
     @Query('category') category?: string,
     @Query('name') name?: string,
   ): Promise<Trainer[]> {
-
     return await this.userService.findApprovedTrainer({ category, name });
   }
 

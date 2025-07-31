@@ -10,10 +10,13 @@ import { MailService } from 'src/common/helpers/mailer/mailer.service';
 
 @Module({
   imports: [MailModule, RedisModule, UserModule, TrainerModule],
-  providers: [OtpService, {
-    provide: MAIL_SERVICE,
-    useClass: MailService
-  }],
+  providers: [
+    OtpService,
+    {
+      provide: MAIL_SERVICE,
+      useClass: MailService,
+    },
+  ],
   exports: [OtpService],
 })
 export class OtpModule {}

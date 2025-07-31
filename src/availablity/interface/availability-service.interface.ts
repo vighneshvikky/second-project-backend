@@ -1,29 +1,12 @@
-import { CreateAvailabilityDto } from "../dto/availablity.dto";
-import { ObjectId } from 'mongodb';
-import { Availability } from "../schemas/availablity.schema";
+// export interface IAvailabilityService {
+//   createAvailabilityTemplate(trainerId: string, data: CreateAvailabilityDto): Promise<IAvailabilityTemplate>;
+//   getTrainerAvailability(trainerId: string): Promise<IAvailabilityTemplate[]>;
+//   updateAvailabilityTemplate(trainerId: string, templateId: string, data: UpdateAvailabilityDto): Promise<IAvailabilityTemplate>;
+//   deleteAvailabilityTemplate(trainerId: string, templateId: string): Promise<void>;
 
-export const AVAILABILITY_SERVICE = 'AVAILABILITY_SERVICE';
-
-
-export interface IAvailabilityService {
-  createOrUpdateAvailability(trainerId: string, dto: CreateAvailabilityDto): Promise<Availability>;
-  getTrainerAvailability(trainerId: string): Promise<Availability[]>;
-  getTrainerAvailabilityBasedonDate(trainerId: string, date: string): Promise<Availability | null>;
-  getDefaultSlotsForTrainer(trainerId: string): Promise<Availability[]>;
-
-}
-
-
-
-export interface TimeSlot {
-  _id: ObjectId;
-  start: string;
-  end: string;
-}
-
-export interface TrainerAvailability {
-  _id: ObjectId;
-  trainerId: ObjectId;
-  date: Date;
-  slots: TimeSlot[];
-}
+//   createSpecificSlot(trainerId: string, data: CreateSpecificSlotDto): Promise<ITimeSlot>;
+//   generateSlots(trainerId: string, startDate: Date, endDate: Date): Promise<ITimeSlot[]>;
+//   getTrainerSlots(trainerId: string, startDate: Date, endDate: Date): Promise<ITimeSlot[]>;
+//   blockTimeSlot(trainerId: string, slotId: string): Promise<ITimeSlot>;
+//   unblockTimeSlot(trainerId: string, slotId: string): Promise<ITimeSlot>;
+// }

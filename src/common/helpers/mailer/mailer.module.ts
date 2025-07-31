@@ -22,7 +22,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             from: '"Vortexfit Support" <no-reply@vortexfit.com>',
           },
         };
-      }
+      },
     }),
   ],
   providers: [MailService],

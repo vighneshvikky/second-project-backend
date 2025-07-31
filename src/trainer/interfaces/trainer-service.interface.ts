@@ -3,9 +3,9 @@ import { CreateTrainerProfileDto } from '../dtos/create-trainer.dto';
 import { UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { Trainer } from '../schemas/trainer.schema';
 
-export const TRAINER_SERVICE = 'TRAINER_SERVICE'
+export const TRAINER_SERVICE = 'TRAINER_SERVICE';
 
-export interface ITrainerService extends IUserRoleService{
+export interface ITrainerService extends IUserRoleService {
   create(payload: Partial<Trainer>): Promise<Trainer>;
   createTrainerWithFiles(data: {
     name: string;
@@ -18,7 +18,8 @@ export interface ITrainerService extends IUserRoleService{
     certificationUrl: string;
     verificationStatus: string;
   }): Promise<Trainer>;
-  updateTrainerProfile(trainerId: string, dto: UpdateTrainerProfileDto): Promise<Trainer>;
-
-
+  updateTrainerProfile(
+    trainerId: string,
+    dto: UpdateTrainerProfileDto,
+  ): Promise<Trainer>;
 }

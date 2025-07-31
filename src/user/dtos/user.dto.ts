@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsArray, IsDateString, IsNumber } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsArray,
+  IsDateString,
+  IsNumber,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -52,6 +58,6 @@ export class UpdateUserDto {
   @IsString({ each: true })
   equipments?: string[];
 
-   @IsOptional()
+  @IsOptional()
   image?: string;
 }

@@ -1,4 +1,9 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Trainer } from '../schemas/trainer.schema';
 import { PasswordUtil } from 'src/common/helpers/password.util';
 import { ITrainerRepository } from '../interfaces/trainer-repository.interface';
@@ -50,27 +55,33 @@ export class TrainerService implements ITrainerService {
     return this.trainerRepo.findById(id);
   }
 
-async updateTrainerProfile(trainerId: string, dto: UpdateTrainerProfileDto): Promise<Trainer> {
-  const trainer = await this.trainerRepo.findById(trainerId);
-  if (!trainer) {
-    throw new NotFoundException('Trainer not found');
+  async updateTrainerProfile(
+    trainerId: string,
+    dto: UpdateTrainerProfileDto,
+  ): Promise<Trainer> {
+    const trainer = await this.trainerRepo.findById(trainerId);
+    if (!trainer) {
+      throw new NotFoundException('Trainer not found');
+    }
+
+    const updatePayload: Partial<Trainer> = {
+      ...dto,
+      pricing: dto.pricing
+        ? {
+            oneToOneSession:
+              dto.pricing.oneToOneSession ??
+              trainer.pricing?.oneToOneSession ??
+              0,
+            workoutPlan:
+              dto.pricing.workoutPlan ?? trainer.pricing?.workoutPlan ?? 0,
+          }
+        : trainer.pricing,
+    };
+
+    const updatedTrainer = await this.trainerRepo.updateById(
+      trainerId,
+      updatePayload,
+    );
+    return updatedTrainer;
   }
-
- 
-  const updatePayload: Partial<Trainer> = {
-    ...dto,
-    pricing: dto.pricing
-      ? {
-          oneToOneSession: dto.pricing.oneToOneSession ?? trainer.pricing?.oneToOneSession ?? 0,
-          workoutPlan: dto.pricing.workoutPlan ?? trainer.pricing?.workoutPlan ?? 0,
-        }
-      : trainer.pricing, 
-  };
-
-  const updatedTrainer = await this.trainerRepo.updateById(trainerId, updatePayload);
-  return updatedTrainer;
-}
-
-
-
 }

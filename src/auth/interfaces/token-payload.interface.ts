@@ -1,5 +1,5 @@
 export interface TokenPayload {
-  sub: string;       
+  sub: string;
   role: 'user' | 'trainer' | 'admin';
-  isBlocked: boolean
+  isBlocked: boolean;
 }

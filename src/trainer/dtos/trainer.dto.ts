@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsOptional,
@@ -7,15 +7,15 @@ import {
   IsNumber,
   ValidateNested,
   IsIn,
-} from "class-validator";
+} from 'class-validator';
 
 class PricingDto {
   @IsNumber()
-    @IsOptional()
+  @IsOptional()
   oneToOneSession?: number;
 
   @IsNumber()
-    @IsOptional()
+  @IsOptional()
   workoutPlan?: number;
 }
 
@@ -40,8 +40,8 @@ export class UpdateTrainerProfileDto {
   @IsNumber()
   experience?: number;
 
-    @IsOptional()
-    @IsIn(['pending', 'approved', 'rejected', 'requested'])
+  @IsOptional()
+  @IsIn(['pending', 'approved', 'rejected', 'requested'])
   verificationStatus?: 'pending' | 'approved' | 'rejected' | 'requested';
 
   @IsOptional()

@@ -25,16 +25,16 @@ import { MailService } from 'src/common/helpers/mailer/mailer.service';
     }),
     UserModule,
     TrainerModule,
-    MailModule
+    MailModule,
   ],
   controllers: [AdminController],
   providers: [
     {
-   provide: ADMIN_SERVICE,
-   useClass: AdminService
+      provide: ADMIN_SERVICE,
+      useClass: AdminService,
     },
     { provide: IJwtTokenService, useClass: JwtTokenService },
-    {provide: MAIL_SERVICE, useClass: MailService}
+    { provide: MAIL_SERVICE, useClass: MailService },
   ],
 })
 export class AdminModule {}

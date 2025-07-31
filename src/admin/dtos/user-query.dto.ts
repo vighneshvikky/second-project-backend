@@ -1,4 +1,3 @@
-
 import { IsOptional, IsNumberString } from 'class-validator';
 
 export class UserQueryDto {

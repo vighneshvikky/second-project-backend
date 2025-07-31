@@ -5,6 +5,7 @@ import {
   UseGuards,
   Inject,
   Post,
+  Req,
 } from '@nestjs/common';
 import { TrainerService } from '../services/trainer.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -12,25 +13,29 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorator/role.decorator';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { NotBlockedGuard } from 'src/common/guards/notBlocked.guard';
-import { ITrainerService, TRAINER_SERVICE } from '../interfaces/trainer-service.interface';
+import {
+  ITrainerService,
+  TRAINER_SERVICE,
+} from '../interfaces/trainer-service.interface';
 import { UpdateTrainerProfileDto } from '../dtos/trainer.dto';
 import { CreateTrainerProfileDto } from '../dtos/create-trainer.dto';
+import { Request } from 'express';
 @Controller('trainers')
 export class TrainerController {
-  constructor(@Inject(TRAINER_SERVICE) private readonly trainerService: ITrainerService) {}
-
-
+  constructor(
+    @Inject(TRAINER_SERVICE) private readonly trainerService: ITrainerService,
+  ) {}
 
   @Patch('update-trainer-profile')
   @UseGuards(JwtAuthGuard, RolesGuard, NotBlockedGuard)
   @Roles('trainer')
   async updateTrainerProfile(
-    @GetUser('sub') trainerId: string,
+    @Req() req: Request,
+    @GetUser('sub')
+    trainerId: string,
     @Body() dto: UpdateTrainerProfileDto,
   ) {
-   
+    const user = req.user;
     return this.trainerService.updateTrainerProfile(trainerId, dto);
   }
-
-
 }

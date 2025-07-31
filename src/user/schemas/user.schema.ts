@@ -1,9 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 import { BaseModel } from 'src/common/model/base-model';
 
-@Schema()
+// export type UserDocumentType = HydratedDocument<User>;
+
+@Schema({ timestamps: true })
 export class User extends BaseModel {
-  
   @Prop()
   dob: string;
 

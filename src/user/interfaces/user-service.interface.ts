@@ -3,7 +3,8 @@ import { UpdateUserDto } from '../dtos/user.dto';
 import { Trainer } from 'src/trainer/schemas/trainer.schema';
 import { IUserRoleService } from 'src/common/interface/user-role-service.interface';
 
-export const USER_SERVICE = 'USER_SERVICE';
+export const USER_SERVICE = Symbol('USER_SERVICE');
+
 
 export interface FindApprovedTrainerQuery {
   category?: string;

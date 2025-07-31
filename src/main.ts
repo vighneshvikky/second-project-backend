@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ async function bootstrap() {
   });
 
   app.use(morgan('dev'));
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -25,6 +27,9 @@ async function bootstrap() {
       disableErrorMessages: false,
     }),
   );
+
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
